@@ -76,10 +76,10 @@ export default {
   },
   computed: {
     botToken() {
-      return ''
+      return import.meta.env.VITE_TELEGRAM_BOT_TOKEN
     },
     adminChatId() {
-      return ''
+      return import.meta.env.VITE_TELEGRAM_ADMIN_CHAT_ID
     }
   }
 }
