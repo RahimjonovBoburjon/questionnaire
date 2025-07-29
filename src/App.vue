@@ -31,6 +31,11 @@ export default {
       isModalOpen: false
     }
   },
+  mounted() {
+    // console.log('Environment check on mount:')
+    // console.log('VITE_TELEGRAM_BOT_TOKEN:', import.meta.env.VITE_TELEGRAM_BOT_TOKEN)
+    // console.log('VITE_TELEGRAM_ADMIN_CHAT_ID:', import.meta.env.VITE_TELEGRAM_ADMIN_CHAT_ID)
+  },
   methods: {
     openModal() {
       this.isModalOpen = true
@@ -40,14 +45,46 @@ export default {
     },
     async handleSubmit(answers) {
       try {
-        const response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: this.adminChatId,
-            text: this.formatAnswers(answers)
+        // console.log('Bot Token:', this.botToken)
+        // console.log('Admin Chat ID:', this.adminChatId)
+
+        if (!this.botToken || this.botToken === 'undefined') {
+          console.error('Bot token is not loaded from environment variables')
+          return
+        }
+
+        if (!this.adminChatId || this.adminChatId === 'undefined') {
+          console.error('Admin chat ID is not loaded from environment variables')
+          return
+        }
+
+        let response
+        try {
+          response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: this.adminChatId,
+              text: this.formatAnswers(answers)
+            })
           })
-        })
+        } catch (corsError) {
+          console.log('Direct request failed due to CORS, trying with proxy...')
+          const proxyUrl = 'https://cors-anywhere.herokuapp.com/'
+          const telegramUrl = `https://api.telegram.org/bot${this.botToken}/sendMessage`
+
+          response = await fetch(proxyUrl + telegramUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Origin': 'http://localhost:8080'
+            },
+            body: JSON.stringify({
+              chat_id: this.adminChatId,
+              text: this.formatAnswers(answers)
+            })
+          })
+        }
 
         if (response.ok) {
           console.log('Answers sent successfully!')
