@@ -19,8 +19,8 @@
             </path>
           </svg>
         </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Welcome to our survey!</h3>
-        <p class="text-gray-600">Please take a moment to answer a few questions. It will only take a minute.</p>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Bizning so'rovnomamizga xush kelibsiz!</h3>
+        <p class="text-gray-600">Iltimos, bir nechta savollarga javob berishga vaqt ajrating. Bu faqat bir daqiqa vaqt oladi.</p>
       </div>
       <button @click="startQuestionnaire"
         class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200">
@@ -58,11 +58,11 @@
       <div class="flex justify-between pt-4">
         <button @click="previousStep" :disabled="currentStep === 1"
           class="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">
-          Back
+          Orqaga
         </button>
         <button @click="nextStep" :disabled="!answers[currentStep - 1]"
           class="px-6 py-2 bg-indigo-600 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700">
-          {{ currentStep === questions.length ? 'Finish' : 'Next' }}
+          {{ currentStep === questions.length ? 'Tugatish' : 'Keyingisi' }}
         </button>
       </div>
     </div>
@@ -77,17 +77,17 @@
             </path>
           </svg>
         </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Are you sure?</h3>
-        <p class="text-gray-600">Please confirm that you want to submit your answers.</p>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Ishonchingiz komilmi?</h3>
+        <p class="text-gray-600">Iltimos, javoblaringizni yubormoqchi ekanligingizni tasdiqlang.</p>
       </div>
       <div class="flex justify-center space-x-4">
         <button @click="goBackToLastQuestion"
           class="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg transition-colors duration-200 hover:bg-gray-50">
-          Go Back
+          Ortga qaytish
         </button>
         <button @click="confirmSubmit"
           class="px-6 py-2 bg-indigo-600 text-white rounded-lg transition-colors duration-200 hover:bg-indigo-700">
-          Yes, Submit
+          Ha, yuborish
         </button>
       </div>
     </div>
@@ -100,12 +100,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
           </svg>
         </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Thank you!</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Rahmat!</h3>
         <p class="text-gray-600">So'rovnomada qatnashganingiz uchun rahmat!</p>
       </div>
       <button @click="closeModal"
         class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200">
-        Close
+        Yopish
       </button>
     </div>
   </div>
@@ -126,20 +126,20 @@ export default {
       answers: [],
       questions: [
         {
-          question: 'What is your favorite color?',
-          options: ['Red', 'Blue', 'Green', 'Other']
+          question: 'Sizning sevimli rangingiz qanday?',
+          options: ['Qizil', 'Ko`k', 'Yashil', 'Boshqa']
         },
         {
-          question: 'What is your age range?',
-          options: ['Under 18', '18–24', '25–34', '35+']
+          question: 'Sizning yoshingiz nechida?',
+          options: ['18 yoshdan past', '18–24', '25–34', '35+']
         },
         {
-          question: 'How did you hear about us?',
-          options: ['Instagram', 'Friend', 'Google', 'Other']
+          question: 'Biz haqimizda qayerdan bildingiz?',
+          options: ['Instagramdan', 'Do`stimdan', 'Googledan', 'Boshqa']
         },
         {
-          question: 'Would you recommend us?',
-          options: ['Definitely', 'Maybe', 'No']
+          question: 'Bizni tavsiya qilasizmi?',
+          options: ['Albatta', 'O`ylab ko`raman', 'Yo`q']
         }
       ]
     }

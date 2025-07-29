@@ -87,7 +87,7 @@ export default {
 
       let text = '📊 New questionnaire submitted:\n\n'
       answers.forEach((answer, index) => {
-        text += `${index + 1}. ${questions[index]}\n   Answer: ${answer}\n\n`
+        text += `${index + 1}. ${questions[index]}\n   Javob: ${answer}\n\n`
       })
 
       return text
