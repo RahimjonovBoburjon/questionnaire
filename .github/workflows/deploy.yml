@@ -1,24 +1,27 @@
-name: Deploy to Netlify
+name: Deploy App
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: 18
+
+      - name: Create .env file
+        run: |
+          echo "VITE_TELEGRAM_BOT_TOKEN=${{ secrets.VITE_TELEGRAM_BOT_TOKEN }}" > .env
+          echo "VITE_TELEGRAM_ADMIN_CHAT_ID=${{ secrets.VITE_TELEGRAM_ADMIN_CHAT_ID }}" >> .env
 
       - name: Install dependencies
         run: npm install
