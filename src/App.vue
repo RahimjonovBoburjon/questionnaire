@@ -32,9 +32,9 @@ export default {
     }
   },
   mounted() {
-    // console.log('Environment check on mount:')
-    // console.log('VITE_TELEGRAM_BOT_TOKEN:', import.meta.env.VITE_TELEGRAM_BOT_TOKEN)
-    // console.log('VITE_TELEGRAM_ADMIN_CHAT_ID:', import.meta.env.VITE_TELEGRAM_ADMIN_CHAT_ID)
+    console.log('Environment check on mount:')
+    console.log('VITE_TELEGRAM_BOT_TOKEN:', import.meta.env.VITE_TELEGRAM_BOT_TOKEN)
+    console.log('VITE_TELEGRAM_ADMIN_CHAT_ID:', import.meta.env.VITE_TELEGRAM_ADMIN_CHAT_ID)
   },
   methods: {
     openModal() {
@@ -45,8 +45,8 @@ export default {
     },
     async handleSubmit(answers) {
       try {
-        // console.log('Bot Token:', this.botToken)
-        // console.log('Admin Chat ID:', this.adminChatId)
+        console.log('Bot Token:', this.botToken)
+        console.log('Admin Chat ID:', this.adminChatId)
 
         if (!this.botToken || this.botToken === 'undefined') {
           console.error('Bot token is not loaded from environment variables')
