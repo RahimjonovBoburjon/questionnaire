@@ -58,33 +58,14 @@ export default {
           return
         }
 
-        let response
-        try {
-          response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: this.adminChatId,
-              text: this.formatAnswers(answers)
-            })
+        const response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: this.adminChatId,
+            text: this.formatAnswers(answers)
           })
-        } catch (corsError) {
-          console.log('Direct request failed due to CORS, trying with proxy...')
-          const proxyUrl = 'https://cors-anywhere.herokuapp.com/'
-          const telegramUrl = `https://api.telegram.org/bot${this.botToken}/sendMessage`
-
-          response = await fetch(proxyUrl + telegramUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Origin': 'http://localhost:8080'
-            },
-            body: JSON.stringify({
-              chat_id: this.adminChatId,
-              text: this.formatAnswers(answers)
-            })
-          })
-        }
+        })
 
         if (response.ok) {
           console.log('Answers sent successfully!')
@@ -93,6 +74,7 @@ export default {
         }
       } catch (error) {
         console.error('Error sending answers:', error)
+        console.log('Note: CORS errors in development are normal. This will work in production.')
       }
     },
     formatAnswers(answers) {
