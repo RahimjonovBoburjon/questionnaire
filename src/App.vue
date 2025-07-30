@@ -8,10 +8,10 @@
 
     <!-- Modal Overlay -->
     <div v-if="isModalOpen"
-      class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-[6px] flex items-center justify-center z-50"
       @click="closeModal">
       <!-- Modal Content -->
-      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto" @click.stop>
+      <div class="relative z-10" @click.stop>
         <QuestionnaireModal :is-open="isModalOpen" @close="closeModal" @submit="handleSubmit" />
       </div>
     </div>

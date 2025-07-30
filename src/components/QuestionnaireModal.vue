@@ -1,112 +1,66 @@
 <template>
-  <div class="p-6">
-    <!-- Header -->
-    <div class="text-center mb-6">
-      <h2 class="text-2xl font-bold text-gray-800">Questionnaire</h2>
-      <div v-if="currentStep > 0 && currentStep <= questions.length" class="w-full bg-gray-200 rounded-full h-2 mt-4">
-        <div class="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-          :style="{ width: `${(currentStep / questions.length) * 100}%` }"></div>
-      </div>
+  <div class="flex flex-col items-center justify-center min-h-[80vh]">
+    <!-- Logo at the top, always above the card -->
+    <div class="z-20 flex justify-center" style="margin-bottom: -2.5rem;">
+      <img src="/logo.png" alt="Logo" class="w-20 h-20 rounded-full border-4 border-white shadow-lg bg-white object-contain" />
     </div>
-
-    <!-- Welcome Screen -->
-    <div v-if="currentStep === 0" class="text-center">
-      <div class="mb-6">
-        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-            </path>
-          </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Bizning so'rovnomamizga xush kelibsiz!</h3>
-        <p class="text-gray-600">Iltimos, bir nechta savollarga javob berishga vaqt ajrating. Bu faqat bir daqiqa vaqt oladi.</p>
+    <!-- Card -->
+    <div class="z-10 bg-white rounded-[2rem] shadow-xl w-[340px] max-w-full px-6 py-8 flex flex-col items-center">
+      <!-- Welcome Screen -->
+      <div v-if="currentStep === 0" class="w-full flex flex-col items-center">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">Welcome to our survey!</h3>
+        <p class="text-gray-600 text-center mb-8">Please take a moment to answer a few questions. It will only take a minute.</p>
+        <button @click="startQuestionnaire"
+          class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200">
+          Start
+        </button>
       </div>
-      <button @click="startQuestionnaire"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200">
-        Start
-      </button>
-    </div>
-
-    <!-- Question Screen -->
-    <div v-else-if="currentStep <= questions.length" class="space-y-6">
-      <!-- Question -->
-      <div>
-        <h3 class="text-xl font-semibold text-gray-800 mb-4">
+      <!-- Question Screen -->
+      <div v-else-if="currentStep <= questions.length" class="w-full flex flex-col items-center">
+        <h3 class="text-lg font-semibold text-gray-800 mb-6 text-center">
           {{ questions[currentStep - 1].question }}
         </h3>
-
-        <!-- Options -->
-        <div class="space-y-3">
-          <label v-for="(option, index) in questions[currentStep - 1].options" :key="index"
-            class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50"
-            :class="{
-              'border-indigo-500 bg-indigo-50': answers[currentStep - 1] === option,
-              'border-gray-200': answers[currentStep - 1] !== option
-            }">
-            <input type="radio" :name="`question-${currentStep}`" :value="option" v-model="answers[currentStep - 1]"
-              class="sr-only">
-            <div class="w-5 h-5 border-2 rounded-full mr-3 flex items-center justify-center">
-              <div v-if="answers[currentStep - 1] === option" class="w-3 h-3 bg-indigo-600 rounded-full"></div>
-            </div>
-            <span class="text-gray-700">{{ option }}</span>
-          </label>
+        <div class="flex flex-col gap-3 w-full mb-4">
+          <button v-for="(option, index) in questions[currentStep - 1].options" :key="index"
+            @click="selectOption(option)"
+            class="bg-gray-100 hover:bg-[#FF2D6A] hover:text-white text-gray-700 font-medium py-3 rounded-full w-full transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]"
+            :class="{ 'bg-[#FF2D6A] text-white': answers[currentStep - 1] === option }">
+            {{ option }}
+          </button>
         </div>
-      </div>
-
-      <!-- Navigation Buttons -->
-      <div class="flex justify-between pt-4">
+        <div class="w-full flex flex-col items-center">
+          <input v-if="questions[currentStep - 1].allowCustom" v-model="customAnswer" placeholder="Enter your answer"
+            class="w-full rounded-xl border border-gray-200 px-4 py-2 mt-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+        </div>
         <button @click="previousStep" :disabled="currentStep === 1"
-          class="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">
-          Orqaga
-        </button>
-        <button @click="nextStep" :disabled="!answers[currentStep - 1]"
-          class="px-6 py-2 bg-indigo-600 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700">
-          {{ currentStep === questions.length ? 'Tugatish' : 'Keyingisi' }}
+          class="mt-4 w-full max-w-xs bg-[#FF2D6A] text-white font-semibold py-3 rounded-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          Back
         </button>
       </div>
-    </div>
-
-    <!-- Confirmation Screen -->
-    <div v-else-if="currentStep === questions.length + 1" class="text-center">
-      <div class="mb-6">
-        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-            </path>
-          </svg>
+      <!-- Confirmation Screen -->
+      <div v-else-if="currentStep === questions.length + 1" class="w-full flex flex-col items-center">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">Are you sure?</h3>
+        <p class="text-gray-600 text-center mb-8">Please confirm that you want to submit your answers.</p>
+        <div class="flex gap-4 w-full">
+          <button @click="goBackToLastQuestion"
+            class="w-1/2 bg-gray-100 text-gray-700 font-semibold py-3 rounded-full transition-colors duration-200 hover:bg-gray-200">
+            Go Back
+          </button>
+          <button @click="confirmSubmit"
+            class="w-1/2 bg-[#FF2D6A] text-white font-semibold py-3 rounded-full transition-colors duration-200 hover:bg-[#e0265c]">
+            Yes, Submit
+          </button>
         </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Ishonchingiz komilmi?</h3>
-        <p class="text-gray-600">Iltimos, javoblaringizni yubormoqchi ekanligingizni tasdiqlang.</p>
       </div>
-      <div class="flex justify-center space-x-4">
-        <button @click="goBackToLastQuestion"
-          class="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg transition-colors duration-200 hover:bg-gray-50">
-          Ortga qaytish
-        </button>
-        <button @click="confirmSubmit"
-          class="px-6 py-2 bg-indigo-600 text-white rounded-lg transition-colors duration-200 hover:bg-indigo-700">
-          Ha, yuborish
+      <!-- Completion Screen -->
+      <div v-else class="w-full flex flex-col items-center">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">Thank you!</h3>
+        <p class="text-gray-600 text-center mb-8">Thank you for participating in the survey.</p>
+        <button @click="closeModal"
+          class="w-full max-w-xs bg-[#FF2D6A] text-white font-semibold py-3 rounded-full transition-colors duration-200">
+          Close
         </button>
       </div>
-    </div>
-
-    <!-- Completion Screen -->
-    <div v-else class="text-center">
-      <div class="mb-6">
-        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Rahmat!</h3>
-        <p class="text-gray-600">So'rovnomada qatnashganingiz uchun rahmat!</p>
-      </div>
-      <button @click="closeModal"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200">
-        Yopish
-      </button>
     </div>
   </div>
 </template>
@@ -124,22 +78,27 @@ export default {
     return {
       currentStep: 0,
       answers: [],
+      customAnswer: '',
       questions: [
         {
-          question: 'Sizning sevimli rangingiz qanday?',
-          options: ['Qizil', 'Ko`k', 'Yashil', 'Boshqa']
+          question: 'What should we focus on most when announcing the promotion?',
+          options: ['Product', 'Number of products', 'Price and quality', 'Promotion terms', 'Brand'],
+          allowCustom: true
         },
         {
-          question: 'Sizning yoshingiz nechida?',
-          options: ['18 yoshdan past', '18–24', '25–34', '35+']
+          question: 'If the promotion message is broadcast on the radio, do you want it to be in the form of a jingle? This increases its audibility and memorability.',
+          options: ['Yes', 'No difference'],
+          allowCustom: true
         },
         {
-          question: 'Biz haqimizda qayerdan bildingiz?',
-          options: ['Instagramdan', 'Do`stimdan', 'Googledan', 'Boshqa']
+          question: 'Is this product, production, brand, sales activity, etc. related to you?',
+          options: ['Yes, I am the company manager', 'No, but I have authority', 'I am not related'],
+          allowCustom: true
         },
         {
-          question: 'Bizni tavsiya qilasizmi?',
-          options: ['Albatta', 'O`ylab ko`raman', 'Yo`q']
+          question: 'Is this product, production, brand, sales activity, etc. related to you?',
+          options: [],
+          allowCustom: true
         }
       ]
     }
@@ -148,8 +107,20 @@ export default {
     startQuestionnaire() {
       this.currentStep = 1
       this.answers = new Array(this.questions.length).fill('')
+      this.customAnswer = ''
+    },
+    selectOption(option) {
+      this.answers[this.currentStep - 1] = option
+      this.customAnswer = ''
+      setTimeout(() => {
+        this.nextStep()
+      }, 150) // Small delay for button feedback
     },
     nextStep() {
+      if (this.questions[this.currentStep - 1].allowCustom && this.customAnswer) {
+        this.answers[this.currentStep - 1] = this.customAnswer
+        this.customAnswer = ''
+      }
       if (this.currentStep === this.questions.length) {
         this.currentStep = this.questions.length + 1
       } else {
@@ -166,11 +137,13 @@ export default {
     previousStep() {
       if (this.currentStep > 1) {
         this.currentStep--
+        this.customAnswer = ''
       }
     },
     closeModal() {
       this.currentStep = 0
       this.answers = []
+      this.customAnswer = ''
       this.$emit('close')
     }
   },
@@ -179,8 +152,15 @@ export default {
       if (!newVal) {
         this.currentStep = 0
         this.answers = []
+        this.customAnswer = ''
       }
     }
   }
 }
 </script>
+
+<style scoped>
+body {
+  background: #3a393a;
+}
+</style>
