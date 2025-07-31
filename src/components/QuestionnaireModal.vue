@@ -40,9 +40,44 @@
             </button>
           </div>
         </div>
+        <!-- Multi-select Options -->
+        <div v-if="questions[currentStep - 1].type === 'multiselect'" class="flex flex-col gap-3 w-full mb-4">
+          <button v-for="option in questions[currentStep - 1].options" :key="option"
+            @click="selectOption(option)"
+            :class="optionButtonClass(option)"
+          >
+            {{ option }}
+          </button>
+          <!-- Boshqa (Other) logic for multiselect -->
+          <div v-if="questions[currentStep - 1].other && answers[currentStep - 1] && answers[currentStep - 1].includes('Boshqa')" class="w-full flex flex-col items-center">
+            <input v-model="otherAnswers[currentStep - 1]" placeholder="Boshqa variantni kiriting"
+              class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+            <button @click="nextStep" :disabled="!otherAnswers[currentStep - 1]"
+              class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              OK
+            </button>
+          </div>
+        </div>
+        <!-- Date Range -->
+        <div v-if="questions[currentStep - 1].type === 'daterange'" class="w-full flex flex-col items-center mb-4">
+          <div class="w-full mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Boshlanish sanasi va vaqti:</label>
+            <input type="date" v-model="dateRange.fromDate" class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+            <input type="time" v-model="dateRange.fromTime" class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+          </div>
+          <div class="w-full mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Tugash sanasi va vaqti:</label>
+            <input type="date" v-model="dateRange.toDate" class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+            <input type="time" v-model="dateRange.toTime" class="w-full rounded-xl border border-gray-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+          </div>
+        </div>
         <!-- File Upload -->
         <div v-if="questions[currentStep - 1].type === 'file'" class="w-full flex flex-col items-center mb-4">
           <input type="file" @change="onFileChange($event, currentStep - 1)" class="mb-2" />
+          <button @click="nextStep" :disabled="!fileNames[currentStep - 1]"
+            class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            Davom etish
+          </button>
         </div>
         <!-- Default Next Button (if not Boshqa) -->
         <button v-if="!isOtherActive(currentStep - 1) && questions[currentStep - 1].type !== 'file'"
@@ -63,6 +98,12 @@
             <span class="font-semibold">{{ q.label }}:</span>
             <span v-if="q.other && answers[idx] === 'Boshqa'"> {{ otherAnswers[idx] }}</span>
             <span v-else-if="q.type === 'file'"> {{ fileNames[idx] || 'Fayl tanlanmagan' }}</span>
+            <span v-else-if="q.type === 'daterange'">
+              {{ answers[idx]?.fromDate }} {{ answers[idx]?.fromTime }} - {{ answers[idx]?.toDate }} {{ answers[idx]?.toTime }}
+            </span>
+            <span v-else-if="q.type === 'multiselect'">
+              {{ answers[idx]?.join(', ') }}
+            </span>
             <span v-else> {{ answers[idx] }}</span>
           </li>
         </ul>
@@ -113,11 +154,28 @@ export default {
       ],
       answers: [],
       otherAnswers: [],
-      fileNames: []
+      fileNames: [],
+      dateRange: {
+        fromDate: '',
+        fromTime: '',
+        toDate: '',
+        toTime: ''
+      }
     }
   },
   methods: {
     nextStep() {
+      // Save current step data if needed
+      const currentIdx = this.currentStep - 1
+      if (this.questions[currentIdx] && this.questions[currentIdx].type === 'daterange') {
+        this.answers[currentIdx] = {
+          fromDate: this.dateRange.fromDate,
+          fromTime: this.dateRange.fromTime,
+          toDate: this.dateRange.toDate,
+          toTime: this.dateRange.toTime
+        }
+      }
+      
       this.currentStep++
       console.log(this.answers)
     },
@@ -126,7 +184,14 @@ export default {
     },
     selectOption(option) {
       const idx = this.currentStep - 1
-      if (this.questions[idx].type === 'checkbox') {
+      const q = this.questions[idx]
+
+      if (q.type === 'checkbox') {
+        if (!Array.isArray(this.answers[idx])) this.answers[idx] = []
+        const i = this.answers[idx].indexOf(option)
+        if (i > -1) this.answers[idx].splice(i, 1)
+        else this.answers[idx].push(option)
+      } else if (q.type === 'multiselect') {
         if (!Array.isArray(this.answers[idx])) this.answers[idx] = []
         const i = this.answers[idx].indexOf(option)
         if (i > -1) this.answers[idx].splice(i, 1)
@@ -146,8 +211,11 @@ export default {
       if (q.type === 'input') return !!this.answers[idx]
       if (q.type === 'radio') return !!this.answers[idx] && (q.other ? (this.answers[idx] !== 'Boshqa' || !!this.otherAnswers[idx]) : true)
       if (q.type === 'checkbox') return Array.isArray(this.answers[idx]) && this.answers[idx].length > 0
-      if (q.type === 'file') return !!this.fileNames[idx]
       if (q.type === 'multiselect') return Array.isArray(this.answers[idx]) && this.answers[idx].length > 0
+      if (q.type === 'daterange') {
+        return !!this.dateRange.fromDate && !!this.dateRange.fromTime && !!this.dateRange.toDate && !!this.dateRange.toTime
+      }
+      if (q.type === 'file') return !!this.fileNames[idx]
       return true
     },
     optionButtonClass(option) {
@@ -180,6 +248,12 @@ export default {
       this.answers = []
       this.otherAnswers = []
       this.fileNames = []
+      this.dateRange = {
+        fromDate: '',
+        fromTime: '',
+        toDate: '',
+        toTime: ''
+      }
       this.$emit('close')
     }
   }
