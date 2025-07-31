@@ -57,12 +57,14 @@ export default {
           return
         }
 
+        const filesUploaded = await this.sendFiles(answers)
+        
         const response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             chat_id: this.adminChatId,
-            text: this.formatAnswers(answers)
+            text: this.formatAnswers(answers, filesUploaded)
           })
         })
 
@@ -76,7 +78,57 @@ export default {
         console.log('Note: CORS errors in development are normal. This will work in production.')
       }
     },
-    formatAnswers(answers) {
+    async sendFiles(answers) {
+      const filesUploaded = []
+      const userName = answers[0] || 'Noma\'lum'
+      
+      for (let i = 0; i < answers.length; i++) {
+        const answer = answers[i]
+        if (answer instanceof File) {
+          try {
+            const formData = new FormData()
+            formData.append('chat_id', this.adminChatId)
+            formData.append('document', answer)
+            formData.append('caption', `Ism: ${userName}\n📎 Yuklangan hujjat: ${answer.name}`)
+            
+            const response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendDocument`, {
+              method: 'POST',
+              body: formData
+            })
+            
+            if (response.ok) {
+              const result = await response.json()
+              filesUploaded.push({
+                index: i,
+                fileName: answer.name,
+                fileId: result.result.document.file_id,
+                success: true
+              })
+              console.log(`File ${answer.name} uploaded successfully`)
+            } else {
+              filesUploaded.push({
+                index: i,
+                fileName: answer.name,
+                success: false,
+                error: 'Upload failed'
+              })
+              console.error(`Failed to upload file: ${answer.name}`)
+            }
+          } catch (error) {
+            filesUploaded.push({
+              index: i,
+              fileName: answer.name,
+              success: false,
+              error: error.message
+            })
+            console.error(`Error uploading file ${answer.name}:`, error)
+          }
+        }
+      }
+      
+      return filesUploaded
+    },
+    formatAnswers(answers, filesUploaded = []) {
       const questions = [
         'Ismingiz?',
         'Aksiya turi qanday?',
@@ -104,7 +156,14 @@ export default {
         } else if (typeof answer === 'object' && answer.fromDate) {
           displayAnswer = `${answer.fromDate} ${answer.fromTime} - ${answer.toDate} ${answer.toTime}`
         } else if (answer instanceof File) {
-          displayAnswer = answer.name || 'Fayl yuklandi'
+          const fileUpload = filesUploaded.find(f => f.index === index)
+          if (fileUpload && fileUpload.success) {
+            displayAnswer = `📎 ${fileUpload.fileName} (yuklandi)`
+          } else if (fileUpload && !fileUpload.success) {
+            displayAnswer = `❌ ${fileUpload.fileName} (yuklanmadi: ${fileUpload.error})`
+          } else {
+            displayAnswer = `📎 ${answer.name} (yuklanmoqda...)`
+          }
         } else {
           displayAnswer = answer || 'Javob berilmagan'
         }
