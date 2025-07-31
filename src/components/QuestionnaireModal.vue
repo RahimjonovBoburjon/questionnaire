@@ -1,14 +1,17 @@
 <template>
   <div class="flex flex-col items-center justify-center min-h-[80vh]">
-    <!-- Logo at the top, always above the card -->
+    <!-- Logo -->
     <div class="z-20 flex justify-center" style="margin-bottom: -2.5rem;">
-      <img src="/logo.png" alt="Logo" class="w-20 h-20 rounded-full border-2 border-white shadow-lg bg-white object-cover" style="object-position: center;" />
+      <img src="/logo.png" alt="Logo"
+        class="w-20 h-20 rounded-full border-2 border-white shadow-lg bg-white object-cover"
+        style="object-position: center;" />
     </div>
     <!-- Card -->
     <div class="z-10 bg-white rounded-[2rem] shadow-xl w-[340px] max-w-full px-6 py-8 flex flex-col items-center">
-      <!-- 1. Intro Card -->
+      <!-- Intro Card -->
       <div v-if="currentStep === 0" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-6 text-center">Sizni millionlar eshitadi va ko‘radi, hatto boshqa mamlakatlardan ham!</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-6 text-center">Sizni millionlar eshitadi va ko‘radi, hatto
+          boshqa mamlakatlardan ham!</h3>
         <button @click="nextStep"
           class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200">
           Boshlash
@@ -18,20 +21,19 @@
       <div v-else-if="currentStep > 0 && currentStep <= questions.length" class="w-full flex flex-col items-center">
         <h3 class="text-lg font-semibold text-gray-800 mb-6 text-center">{{ questions[currentStep - 1].label }}</h3>
         <!-- Text Input -->
-        <input v-if="questions[currentStep - 1].type === 'input'"
-          v-model="answers[currentStep - 1]"
+        <input v-if="questions[currentStep - 1].type === 'input'" v-model="answers[currentStep - 1]"
           :placeholder="questions[currentStep - 1].placeholder || ''"
           class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
         <!-- Radio/Checkbox Options -->
-        <div v-if="['radio','checkbox'].includes(questions[currentStep - 1].type)" class="flex flex-col gap-3 w-full mb-4">
-          <button v-for="option in questions[currentStep - 1].options" :key="option"
-            @click="selectOption(option)"
-            :class="optionButtonClass(option)"
-          >
+        <div v-if="['radio', 'checkbox'].includes(questions[currentStep - 1].type)"
+          class="flex flex-col gap-3 w-full mb-4">
+          <button v-for="option in questions[currentStep - 1].options" :key="option" @click="selectOption(option)"
+            :class="optionButtonClass(option)">
             {{ option }}
           </button>
-          <!-- Boshqa (Other) logic -->
-          <div v-if="questions[currentStep - 1].other && answers[currentStep - 1] === 'Boshqa'" class="w-full flex flex-col items-center">
+          <!-- Other logic -->
+          <div v-if="questions[currentStep - 1].other && answers[currentStep - 1] === 'Boshqa'"
+            class="w-full flex flex-col items-center">
             <input v-model="otherAnswers[currentStep - 1]" placeholder="Boshqa variantni kiriting"
               class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
             <button @click="nextStep" :disabled="!otherAnswers[currentStep - 1]"
@@ -42,14 +44,14 @@
         </div>
         <!-- Multi-select Options -->
         <div v-if="questions[currentStep - 1].type === 'multiselect'" class="flex flex-col gap-3 w-full mb-4">
-          <button v-for="option in questions[currentStep - 1].options" :key="option"
-            @click="selectOption(option)"
-            :class="optionButtonClass(option)"
-          >
+          <button v-for="option in questions[currentStep - 1].options" :key="option" @click="selectOption(option)"
+            :class="optionButtonClass(option)">
             {{ option }}
           </button>
-          <!-- Boshqa (Other) logic for multiselect -->
-          <div v-if="questions[currentStep - 1].other && answers[currentStep - 1] && answers[currentStep - 1].includes('Boshqa')" class="w-full flex flex-col items-center">
+          <!-- Other logic for multiselect -->
+          <div
+            v-if="questions[currentStep - 1].other && answers[currentStep - 1] && answers[currentStep - 1].includes('Boshqa')"
+            class="w-full flex flex-col items-center">
             <input v-model="otherAnswers[currentStep - 1]" placeholder="Boshqa variantni kiriting"
               class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
             <button @click="nextStep" :disabled="!otherAnswers[currentStep - 1]"
@@ -62,26 +64,30 @@
         <div v-if="questions[currentStep - 1].type === 'daterange'" class="w-full flex flex-col items-center mb-4">
           <div class="w-full mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Boshlanish sanasi va vaqti:</label>
-            <input type="date" v-model="dateRange.fromDate" class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
-            <input type="time" v-model="dateRange.fromTime" class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+            <input type="date" v-model="dateRange.fromDate"
+              class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+            <input type="time" v-model="dateRange.fromTime"
+              class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
           </div>
           <div class="w-full mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Tugash sanasi va vaqti:</label>
-            <input type="date" v-model="dateRange.toDate" class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
-            <input type="time" v-model="dateRange.toTime" class="w-full rounded-xl border border-gray-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+            <input type="date" v-model="dateRange.toDate"
+              class="w-full rounded-xl border border-gray-200 px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+            <input type="time" v-model="dateRange.toTime"
+              class="w-full rounded-xl border border-gray-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
           </div>
         </div>
         <!-- File Upload -->
-        <div v-if="questions[currentStep - 1].type === 'file'" class="w-full flex flex-col items-center mb-4">
-          <input type="file" @change="onFileChange($event, currentStep - 1)" class="mb-2" />
+        <div v-if="questions[currentStep - 1].type === 'file'" class="w-full flex flex-col items-center">
+          <input type="file" @change="onFileChange($event, currentStep - 1)" class="mb-4" />
           <button @click="nextStep" :disabled="!fileNames[currentStep - 1]"
             class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
             Davom etish
           </button>
         </div>
-        <!-- Default Next Button (if not Boshqa) -->
-        <button v-if="!isOtherActive(currentStep - 1) && questions[currentStep - 1].type !== 'file'"
-          @click="nextStep" :disabled="!isStepValid(currentStep - 1)"
+        <!-- Default Next Button (if not Other) -->
+        <button v-if="!isOtherActive(currentStep - 1) && questions[currentStep - 1].type !== 'file'" @click="nextStep"
+          :disabled="!isStepValid(currentStep - 1)"
           class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
           Davom etish
         </button>
@@ -90,7 +96,7 @@
           Orqaga
         </button>
       </div>
-      <!-- Final Step: Summary/Confirmation -->
+      <!-- Summary/Confirmation -->
       <div v-else-if="currentStep === questions.length + 1" class="w-full flex flex-col items-center">
         <h3 class="text-lg font-semibold text-gray-800 mb-6 text-center">Barcha ma’lumotlarni tasdiqlang</h3>
         <ul class="w-full mb-4">
@@ -99,7 +105,8 @@
             <span v-if="q.other && answers[idx] === 'Boshqa'"> {{ otherAnswers[idx] }}</span>
             <span v-else-if="q.type === 'file'"> {{ fileNames[idx] || 'Fayl tanlanmagan' }}</span>
             <span v-else-if="q.type === 'daterange'">
-              {{ answers[idx]?.fromDate }} {{ answers[idx]?.fromTime }} - {{ answers[idx]?.toDate }} {{ answers[idx]?.toTime }}
+              {{ answers[idx]?.fromDate }} {{ answers[idx]?.fromTime }} - {{ answers[idx]?.toDate }} {{
+                answers[idx]?.toTime }}
             </span>
             <span v-else-if="q.type === 'multiselect'">
               {{ answers[idx]?.join(', ') }}
@@ -136,10 +143,12 @@ export default {
     return {
       currentStep: 0,
       questions: [
-        { type: 'input', label: 'Ismingiz nima?', placeholder: 'Ismingizni kiriting' },
-        { type: 'radio', label: 'Aksiya turi qanday?', options: [
-          '1+1 aksiyasi', '2+1 aksiyasi', 'Diskont (narxlar pasayishi)', 'Rasprodaja (sotib tugatish)', '400 000 so‘mdan ko‘p xarid uchun sovg‘a', 'Har 10-mashinani yuvish bepul', 'Xarid uchun sovg‘a bor', 'Boshqa'
-        ], other: true },
+        { type: 'input', label: 'Ismingiz?', placeholder: 'Ismingizni kiriting' },
+        {
+          type: 'radio', label: 'Aksiya turi qanday?', options: [
+            '1+1 aksiyasi', '2+1 aksiyasi', 'Diskont (narxlar pasayishi)', 'Rasprodaja (sotib tugatish)', '400 000 so‘mdan ko‘p xarid uchun sovg‘a', 'Har 10-mashinani yuvish bepul', 'Xarid uchun sovg‘a bor', 'Boshqa'
+          ], other: true
+        },
         { type: 'daterange', label: 'Aksiya amal qilish muddati va vaqti' },
         { type: 'radio', label: 'Qanchalik shoshilinch?', options: ['Shoshilinch emas', 'O‘rta shoshilinch', 'Juda shoshilinch'] },
         { type: 'radio', label: 'Aksiya mahsuloti turi', options: ['Xizmat ko‘rsatish / servis', 'Oziq-ovqat', 'Kiyim-kechak', 'Transport savdosi', 'Ko‘chmas mulk savdosi', 'Boshqa'], other: true },
@@ -165,7 +174,6 @@ export default {
   },
   methods: {
     nextStep() {
-      // Save current step data if needed
       const currentIdx = this.currentStep - 1
       if (this.questions[currentIdx] && this.questions[currentIdx].type === 'daterange') {
         this.answers[currentIdx] = {
@@ -175,7 +183,7 @@ export default {
           toTime: this.dateRange.toTime
         }
       }
-      
+
       this.currentStep++
       console.log(this.answers)
     },
@@ -241,6 +249,7 @@ export default {
       }
     },
     submitForm() {
+      this.$emit('submit', this.answers)
       this.currentStep++
     },
     closeModal() {

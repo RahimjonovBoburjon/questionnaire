@@ -47,7 +47,6 @@ export default {
       try {
         // console.log('Bot Token:', this.botToken)
         // console.log('Admin Chat ID:', this.adminChatId)
-
         if (!this.botToken || this.botToken === 'undefined') {
           console.error('Bot token is not loaded from environment variables')
           return
@@ -79,15 +78,38 @@ export default {
     },
     formatAnswers(answers) {
       const questions = [
-        'What is your favorite color?',
-        'What is your age range?',
-        'How did you hear about us?',
-        'Would you recommend us?'
+        'Ismingiz?',
+        'Aksiya turi qanday?',
+        'Aksiya amal qilish muddati va vaqti',
+        'Qanchalik shoshilinch?',
+        'Aksiya mahsuloti turi',
+        'Aksiya amal qilish hududi',
+        'Aksiya tili',
+        'E\'londa asosiy urg\'uni nimaga qaratamiz?',
+        'Radio orqali uzatiladigan habar qanday bo\'lsin?',
+        'Siz ushbu mahsulot/brendning egasimisiz?',
+        'Yuridik hujjat (litsenziya, YATT, MCHJ) yuklang',
+        'Telefon raqamini SMS orqali tasdiqlaysizmi?',
+        'Ma\'lumotlarni tasdiqlash'
       ]
 
-      let text = '📊 New questionnaire submitted:\n\n'
+      let text = '📊 Yangi aksiya so\'rovnomasi:\n\n'
       answers.forEach((answer, index) => {
-        text += `${index + 1}. ${questions[index]}\n   Javob: ${answer}\n\n`
+        let displayAnswer = ''
+        
+        if (answer === 'Boshqa') {
+          displayAnswer = 'Boshqa (custom answer)'
+        } else if (Array.isArray(answer)) {
+          displayAnswer = answer.join(', ')
+        } else if (typeof answer === 'object' && answer.fromDate) {
+          displayAnswer = `${answer.fromDate} ${answer.fromTime} - ${answer.toDate} ${answer.toTime}`
+        } else if (answer instanceof File) {
+          displayAnswer = answer.name || 'Fayl yuklandi'
+        } else {
+          displayAnswer = answer || 'Javob berilmagan'
+        }
+        
+        text += `${index + 1}. ${questions[index]}\n   Javob: ${displayAnswer}\n\n`
       })
 
       return text
