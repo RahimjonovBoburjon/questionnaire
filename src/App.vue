@@ -58,7 +58,7 @@ export default {
         }
 
         const filesUploaded = await this.sendFiles(answers)
-        
+
         const response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -81,7 +81,7 @@ export default {
     async sendFiles(answers) {
       const filesUploaded = []
       const userName = answers[0] || 'Noma\'lum'
-      
+
       for (let i = 0; i < answers.length; i++) {
         const answer = answers[i]
         if (answer instanceof File) {
@@ -90,12 +90,12 @@ export default {
             formData.append('chat_id', this.adminChatId)
             formData.append('document', answer)
             formData.append('caption', `Ism: ${userName}\n📎 Yuklangan hujjat: ${answer.name}`)
-            
+
             const response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendDocument`, {
               method: 'POST',
               body: formData
             })
-            
+
             if (response.ok) {
               const result = await response.json()
               filesUploaded.push({
@@ -125,7 +125,7 @@ export default {
           }
         }
       }
-      
+
       return filesUploaded
     },
     formatAnswers(answers, filesUploaded = []) {
@@ -148,7 +148,7 @@ export default {
       let text = '📊 Yangi aksiya so\'rovnomasi:\n\n'
       answers.forEach((answer, index) => {
         let displayAnswer = ''
-        
+
         if (answer === 'Boshqa') {
           displayAnswer = 'Boshqa (custom answer)'
         } else if (Array.isArray(answer)) {
@@ -167,7 +167,7 @@ export default {
         } else {
           displayAnswer = answer || 'Javob berilmagan'
         }
-        
+
         text += `${index + 1}. ${questions[index]}\n   Javob: ${displayAnswer}\n\n`
       })
 
