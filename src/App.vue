@@ -128,49 +128,55 @@ export default {
 
       return filesUploaded
     },
-    formatAnswers(answers, filesUploaded = []) {
-      const questions = [
-        'Ismingiz?',
-        'Aksiya turi qanday?',
-        'Aksiya amal qilish muddati va vaqti',
-        'Qanchalik shoshilinch?',
-        'Aksiya mahsuloti turi',
-        'Aksiya amal qilish hududi',
-        'Aksiya tili',
-        'E\'londa asosiy urg\'uni nimaga qaratamiz?',
-        'Radio orqali uzatiladigan habar qanday bo\'lsin?',
-        'Siz ushbu mahsulot/brendning egasimisiz?',
-        'Yuridik hujjat (litsenziya, YATT, MCHJ) yuklang',
-        'Telefon raqamini SMS orqali tasdiqlaysizmi?',
-        'Ma\'lumotlarni tasdiqlash'
+    formatAnswers(formData, filesUploaded = []) {
+      let text = '📊 Radio Yonar - Yangi biznes so\'rovnomasi:\n\n'
+      
+      // Format the new Radio Yonar form data
+      text += `👤 Ism: ${formData.name || 'Kiritilmagan'}\n`
+      text += `✅ Vakillik tasdiqlangan: ${formData.isRepresentative ? 'Ha' : 'Yo\'q'}\n`
+      text += `✅ Ma\'lumotlar aniqligi tasdiqlangan: ${formData.confirmAccuracy ? 'Ha' : 'Yo\'q'}\n\n`
+      
+      text += `📝 Aksiya tavsifi:\n${formData.promotionDescription || 'Kiritilmagan'}\n\n`
+      
+      text += `🌍 Geografiya: ${formData.geography || 'Kiritilmagan'}\n\n`
+      
+      if (formData.promotionLanguages && formData.promotionLanguages.length > 0) {
+        text += `🗣️ Aksiya tillari: ${formData.promotionLanguages.join(', ')}\n\n`
+      }
+      
+      const location = formData.manualAddress || formData.location
+      if (location) {
+        text += `📍 Joylashuv: ${location}\n\n`
+      }
+      
+      text += `📞 Kontakt ma\'lumotlari:\n`
+      text += `   Mobil: ${formData.mobilePhone || 'Kiritilmagan'}\n`
+      if (formData.officePhone) {
+        text += `   Ish telefoni: ${formData.officePhone}\n`
+      }
+      text += `   Email: ${formData.email || 'Kiritilmagan'}\n`
+      text += `   Qayta qo\'ng\'iroq ruxsati: ${formData.allowCallback ? 'Ha' : 'Yo\'q'}\n\n`
+      
+      // Handle file uploads
+      const fileFields = [
+        { key: 'businessPhoto', label: 'Biznes fotosi' },
+        { key: 'documentPhoto', label: 'Hujjat fotosi' },
+        { key: 'selfieVideo', label: 'Selfi video' }
       ]
-
-      let text = '📊 Yangi aksiya so\'rovnomasi:\n\n'
-      answers.forEach((answer, index) => {
-        let displayAnswer = ''
-
-        if (answer === 'Boshqa') {
-          displayAnswer = 'Boshqa (custom answer)'
-        } else if (Array.isArray(answer)) {
-          displayAnswer = answer.join(', ')
-        } else if (typeof answer === 'object' && answer.fromDate) {
-          displayAnswer = `${answer.fromDate} ${answer.fromTime} - ${answer.toDate} ${answer.toTime}`
-        } else if (answer instanceof File) {
-          const fileUpload = filesUploaded.find(f => f.index === index)
+      
+      fileFields.forEach(field => {
+        if (formData[field.key]) {
+          const fileUpload = filesUploaded.find(f => f.fieldName === field.key)
           if (fileUpload && fileUpload.success) {
-            displayAnswer = `📎 ${fileUpload.fileName} (yuklandi)`
+            text += `📎 ${field.label}: ${fileUpload.fileName} (yuklandi)\n`
           } else if (fileUpload && !fileUpload.success) {
-            displayAnswer = `❌ ${fileUpload.fileName} (yuklanmadi: ${fileUpload.error})`
+            text += `❌ ${field.label}: ${fileUpload.fileName} (yuklanmadi: ${fileUpload.error})\n`
           } else {
-            displayAnswer = `📎 ${answer.name} (yuklanmoqda...)`
+            text += `📎 ${field.label}: ${formData[field.key].name} (yuklanmoqda...)\n`
           }
-        } else {
-          displayAnswer = answer || 'Javob berilmagan'
         }
-
-        text += `${index + 1}. ${questions[index]}\n   Javob: ${displayAnswer}\n\n`
       })
-
+      
       return text
     }
   },
