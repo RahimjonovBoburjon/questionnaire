@@ -8,7 +8,7 @@
 
     <!-- Modal Overlay -->
     <div v-if="isModalOpen"
-      class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-[6px] flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-[6px] flex items-center justify-center z-50"
       @click="closeModal">
       <!-- Modal Content -->
       <div class="relative z-10" @click.stop>
@@ -131,7 +131,6 @@ export default {
     formatAnswers(formData, filesUploaded = []) {
       let text = '📊 Radio Yonar - Yangi biznes so\'rovnomasi:\n\n'
       
-      // Format the new Radio Yonar form data
       text += `👤 Ism: ${formData.name || 'Kiritilmagan'}\n`
       text += `✅ Vakillik tasdiqlangan: ${formData.isRepresentative ? 'Ha' : 'Yo\'q'}\n`
       text += `✅ Ma\'lumotlar aniqligi tasdiqlangan: ${formData.confirmAccuracy ? 'Ha' : 'Yo\'q'}\n\n`
@@ -157,7 +156,6 @@ export default {
       text += `   Email: ${formData.email || 'Kiritilmagan'}\n`
       text += `   Qayta qo\'ng\'iroq ruxsati: ${formData.allowCallback ? 'Ha' : 'Yo\'q'}\n\n`
       
-      // Handle file uploads
       const fileFields = [
         { key: 'businessPhoto', label: 'Biznes fotosi' },
         { key: 'documentPhoto', label: 'Hujjat fotosi' },

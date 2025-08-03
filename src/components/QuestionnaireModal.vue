@@ -1,13 +1,24 @@
 <template>
-  <div class="flex flex-col items-center justify-start w-full">
-    <!-- Logo -->
-    <div class="z-20 flex justify-center flex-shrink-0" style="margin-bottom: -3.5rem;">
-      <img src="/logo.png" alt="Logo" class="w-32 h-32 object-cover" style="object-position: center;" />
-    </div>
-    <!-- Card -->
-    <div class="z-10 bg-white rounded-[2rem] shadow-xl w-full max-w-[400px] px-6 py-8 flex flex-col items-center">
+  <div class="flex flex-col items-center justify-center w-full min-h-screen p-4">
+    <!-- Main Container -->
+    <div class="w-full max-w-md">
+      <!-- Progress Circle - 50% visible, behind the cards, peeking from top -->
+      <div v-if="currentStep > 0 && currentStep <= 11" class="relative flex justify-center mb-6" style="height: 0;">
+        <div 
+          class="w-24 h-24 bg-white rounded-full shadow-md border-2 border-gray-200 flex items-center justify-center"
+          style="
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            pointer-events: none;
+          "
+        ></div>
+      </div>
+      
       <!-- Show normal questionnaire content for steps 0-11 -->
-      <div v-if="currentStep <= 11" class="w-full">
+      <div v-if="currentStep <= 11" class="w-full bg-white rounded-3xl shadow-md p-6">
       <!-- Language Selection -->
       <div v-if="currentStep === 0" class="w-full flex flex-col items-center">
         <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getTitle('language') }}</h3>
@@ -15,7 +26,7 @@
 
         <div class="w-full mb-6">
           <select v-model="selectedLanguage"
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A] text-center">
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
             <option value="">{{ getPlaceholder('selectLanguage') }}</option>
             <option value="uz">O'ZBEKCHA</option>
             <option value="ru">РУССКИЙ</option>
@@ -23,47 +34,72 @@
           </select>
         </div>
 
-        <button @click="setLanguageAndContinue" :disabled="!selectedLanguage"
-          class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-          OK
-        </button>
+        <div class="flex justify-center">
+          <button @click="setLanguageAndContinue" :disabled="!selectedLanguage"
+            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            OK
+          </button>
+        </div>
       </div>
 
       <!-- Terms & Conditions -->
-      <div v-else-if="currentStep === 1" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">{{ getText('termsTitle') }}</h3>
+      <div v-else-if="currentStep === 1" class="w-full">
+        <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">{{ getText('termsTitle') || 'ОЗНАКОМЬТЕСЬ ПЕРЕД ПРОДОЛЖЕНИЕМ' }}</h3>
 
-        <div class="w-full mb-6 max-h-[40vh] overflow-y-auto bg-gray-50 rounded-xl p-4 text-sm text-gray-700">
-          <div class="mb-4">
-            <h4 class="font-semibold mb-2">{{ getText('responsibilityTitle') }}</h4>
-            <p class="mb-2">{{ getText('responsibilityText') }}</p>
-            <ul class="list-disc list-inside space-y-1 ml-2">
-              <li>{{ getText('responsibility1') }}</li>
-              <li>{{ getText('responsibility2') }}</li>
-              <li>{{ getText('responsibility3') }}</li>
-            </ul>
-          </div>
-
-          <div class="mb-4">
-            <h4 class="font-semibold mb-2">{{ getText('publicityTitle') }}</h4>
-            <p class="mb-2">{{ getText('publicityText') }}</p>
-            <ul class="list-disc list-inside space-y-1 ml-2">
-              <li>{{ getText('publicity1') }}</li>
-              <li>{{ getText('publicity2') }}</li>
-              <li>{{ getText('publicity3') }}</li>
-            </ul>
-          </div>
-
+        <div class="w-full mb-8 space-y-6">
+          <!-- Responsibility Section -->
           <div>
-            <h4 class="font-semibold mb-2">{{ getText('consentTitle') }}</h4>
-            <p>{{ getText('consentText') }}</p>
+            <h4 class="font-bold text-gray-800 mb-3">{{ getText('responsibilityTitle') || 'Ответственность:' }}</h4>
+            <p class="text-gray-700 mb-3 leading-relaxed">{{ getText('responsibilityText') || 'Пожалуйста, вводите только достоверную и актуальную информацию.' }}</p>
+            <ul class="text-gray-700 space-y-2 ml-4">
+              <li class="flex items-start">
+                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                <span>{{ getText('responsibility1') || 'от имени других лиц без их ведома;' }}</span>
+              </li>
+              <li class="flex items-start">
+                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                <span>{{ getText('responsibility2') || 'фейковые предложения;' }}</span>
+              </li>
+              <li class="flex items-start">
+                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                <span>{{ getText('responsibility3') || 'вводящие в заблуждение формулировки.' }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Publicity Section -->
+          <div>
+            <h4 class="font-bold text-gray-800 mb-3">{{ getText('publicityTitle') || 'Публичность:' }}</h4>
+            <p class="text-gray-700 mb-3 leading-relaxed">{{ getText('publicityText') || 'Если ваша информация пройдет верификацию, она может быть размещена:' }}</p>
+            <ul class="text-gray-700 space-y-2 ml-4">
+              <li class="flex items-start">
+                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                <span>{{ getText('publicity1') || 'в эфире Radio Yonar;' }}</span>
+              </li>
+              <li class="flex items-start">
+                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                <span>{{ getText('publicity2') || 'в наших соцсетях;' }}</span>
+              </li>
+              <li class="flex items-start">
+                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                <span>{{ getText('publicity3') || 'на официальных платформах.' }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Consent Section -->
+          <div>
+            <h4 class="font-bold text-gray-800 mb-3">{{ getText('consentTitle') || 'Согласие:' }}</h4>
+            <p class="text-gray-700 leading-relaxed">{{ getText('consentText') || 'Нажимая кнопку "Согласен", вы подтверждаете, что согласны с этими условиями.' }}</p>
           </div>
         </div>
 
-        <button @click="nextStep"
-          class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200">
-          {{ getText('agreeButton') }}
-        </button>
+        <div class="flex justify-center">
+          <button @click="nextStep"
+            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+            {{ getText('agreeButton') || 'Согласен' }}
+          </button>
+        </div>
       </div>
       <!-- Step 1: Name & Checkboxes (1/10) -->
       <div v-else-if="currentStep === 2" class="w-full flex flex-col items-center">
@@ -90,10 +126,12 @@
           </label>
         </div>
 
-        <button @click="nextStep" :disabled="!canProceed()"
-          class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-          {{ getText('continueButton') }}
-        </button>
+        <div class="flex justify-center">
+          <button @click="nextStep" :disabled="!canProceed()"
+            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ getText('continueButton') }}
+          </button>
+        </div>
       </div>
 
       <!-- Step 2: Promotion Description (2/10) -->
@@ -114,10 +152,12 @@
         <textarea v-model="formData.promotionDescription" :placeholder="getText('promotionPlaceholder')" rows="6"
           class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A] resize-none"></textarea>
 
-        <button @click="nextStep" :disabled="!formData.promotionDescription?.trim()"
-          class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-          {{ getText('continueButton') }}
-        </button>
+        <div class="flex justify-center">
+          <button @click="nextStep" :disabled="!formData.promotionDescription?.trim()"
+            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ getText('continueButton') }}
+          </button>
+        </div>
       </div>
 
       <!-- Step 3: Geography (3/10) -->
@@ -128,10 +168,12 @@
         <input v-model="formData.geography" :placeholder="getText('geographyPlaceholder')"
           class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
 
-        <button @click="nextStep" :disabled="!formData.geography?.trim()"
-          class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-8 rounded-full w-full max-w-xs transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-          {{ getText('continueButton') }}
-        </button>
+        <div class="flex justify-center">
+          <button @click="nextStep" :disabled="!formData.geography?.trim()"
+            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ getText('continueButton') }}
+          </button>
+        </div>
       </div>
 
       <!-- Step 5: Promotion Languages (4/10) -->
@@ -379,20 +421,20 @@
         
         <!-- Preview Button -->
         <button @click="showPreview = true"
-          class="w-full max-w-xs bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full transition-colors duration-200 mb-3">
+          class="w-full max-w-xs bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mb-3">
           {{ getText('previewButton') || 'ПРЕДВАРИТЕЛЬНЫЙ ПРОСМОТР' }}
         </button>
         
         <!-- Continue Button -->
         <button @click="nextStep"
-          class="w-full max-w-xs bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-full transition-colors duration-200 mb-3">
+          class="w-full max-w-xs bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mb-3">
           {{ getText('continueButton') || 'ПРОДОЛЖИТЬ' }}
         </button>
         <div class="text-xs text-gray-500 mt-1">Debug: Step {{ currentStep }}</div>
         
         <!-- Back Button -->
         <button @click="prevStep"
-          class="w-full max-w-xs bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full transition-colors duration-200">
+          class="w-full max-w-xs bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
           {{ getText('backButton') || 'Назад' }}
         </button>
       </div>
@@ -483,7 +525,7 @@
       </div>
       
       <!-- Final Success Screen (Step 12) - Separate from main questionnaire -->
-      <div v-else-if="currentStep === 12" class="w-full flex flex-col items-center text-center">
+      <div v-else-if="currentStep === 12" class="w-full bg-white rounded-3xl shadow-md border border-gray-200 p-6 flex flex-col items-center text-center">
         <div class="mb-6">
           <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -496,10 +538,12 @@
             {{ getText('brandMessage') || 'Radio Yonar — слышит, замечает, усиливает!' }}
           </div>
         </div>
-        <button @click="closeModal"
-          class="w-full max-w-xs bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 rounded-full transition-colors duration-200">
-          {{ getText('closeButton') || 'Закрыть' }}
-        </button>
+        <div class="flex justify-center">
+          <button @click="closeModal"
+            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+            {{ getText('closeButton') || 'Закрыть' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -840,5 +884,26 @@ export default {
 <style scoped>
 body {
   background: #3a393a;
+}
+
+.bg-\[#FF2D6A\], .bg-\[#FF2D6A\]:hover {
+  background-color: #c0d700 !important;
+}
+
+.hover\:bg-\[#e0265c\]:hover {
+  background-color: #a8c000 !important;
+}
+
+.focus\:ring-\[#FF2D6A\]:focus {
+  --tw-ring-color: #c0d700 !important;
+}
+
+.text-\[#FF2D6A\] {
+  color: #c0d700 !important;
+}
+
+input[type="checkbox"].text-\[#FF2D6A\]:checked {
+  background-color: #c0d700 !important;
+  border-color: #c0d700 !important;
 }
 </style>
