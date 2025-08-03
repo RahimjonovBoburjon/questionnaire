@@ -8,7 +8,7 @@
           class="w-24 h-24 bg-white rounded-full shadow-md border-2 border-gray-200 flex items-center justify-center"
           style="
             position: absolute;
-            top: -18px;
+            top: -14px;
             left: 50%;
             transform: translateX(-50%);
             z-index: -1;
@@ -44,12 +44,12 @@
 
       <!-- Terms & Conditions -->
       <div v-else-if="currentStep === 1" class="w-full">
-        <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">{{ getText('termsTitle') || 'ОЗНАКОМЬТЕСЬ ПЕРЕД ПРОДОЛЖЕНИЕМ' }}</h3>
+        <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">{{ getText('termsTitle') || 'ОЗНАКОМЬТЕСЬ ПЕРЕД ПРОДОЛЖЕНИЕМ' }}</h3>
 
         <div class="w-full mb-8 space-y-6">
           <!-- Responsibility Section -->
           <div>
-            <h4 class="font-bold text-gray-800 mb-3">{{ getText('responsibilityTitle') || 'Ответственность:' }}</h4>
+            <h4 class="text-lg font-bold text-gray-800">{{ getText('responsibilityTitle') || 'Ответственность:' }}</h4>
             <p class="text-gray-700 mb-3 leading-relaxed">{{ getText('responsibilityText') || 'Пожалуйста, вводите только достоверную и актуальную информацию.' }}</p>
             <ul class="text-gray-700 space-y-2 ml-4">
               <li class="flex items-start">
@@ -69,7 +69,7 @@
 
           <!-- Publicity Section -->
           <div>
-            <h4 class="font-bold text-gray-800 mb-3">{{ getText('publicityTitle') || 'Публичность:' }}</h4>
+            <h4 class="font-bold text-gray-800">{{ getText('publicityTitle') || 'Публичность:' }}</h4>
             <p class="text-gray-700 mb-3 leading-relaxed">{{ getText('publicityText') || 'Если ваша информация пройдет верификацию, она может быть размещена:' }}</p>
             <ul class="text-gray-700 space-y-2 ml-4">
               <li class="flex items-start">
@@ -89,7 +89,7 @@
 
           <!-- Consent Section -->
           <div>
-            <h4 class="font-bold text-gray-800 mb-3">{{ getText('consentTitle') || 'Согласие:' }}</h4>
+            <h4 class="font-bold text-gray-800">{{ getText('consentTitle') || 'Согласие:' }}</h4>
             <p class="text-gray-700 leading-relaxed">{{ getText('consentText') || 'Нажимая кнопку "Согласен", вы подтверждаете, что согласны с этими условиями.' }}</p>
           </div>
         </div>
