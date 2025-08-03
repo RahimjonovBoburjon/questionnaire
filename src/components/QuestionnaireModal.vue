@@ -6,8 +6,8 @@
     </div>
     <!-- Card -->
     <div class="z-10 bg-white rounded-[2rem] shadow-xl w-full max-w-[400px] px-6 py-8 flex flex-col items-center">
-      <!-- Show normal questionnaire content for steps 0-10 -->
-      <div v-if="currentStep <= 10" class="w-full">
+      <!-- Show normal questionnaire content for steps 0-11 -->
+      <div v-if="currentStep <= 11" class="w-full">
       <!-- Language Selection -->
       <div v-if="currentStep === 0" class="w-full flex flex-col items-center">
         <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getTitle('language') }}</h3>
@@ -354,15 +354,46 @@
 
       <!-- Step 11: Initial Completion Screen (10/10) -->
       <div v-else-if="currentStep === 11" class="w-full flex flex-col items-center">
-        <div class="text-center mb-8">
+        <div class="text-center mb-6">
           <h3 class="text-xl font-bold text-gray-800 mb-2">{{ getText('congratulationsTitle') || 'Поздравляем, все этапы завершены!' }}</h3>
-          <div class="text-lg font-semibold text-[#FF2D6A]">10/10</div>
+          <div class="text-lg font-semibold text-[#FF2D6A] mb-4">10/10</div>
+          <p class="text-sm text-gray-600 mb-6">{{ getText('reviewMessage') || 'Пожалуйста, проверьте все ваши ответы перед отправкой' }}</p>
+          
+          <!-- Review status message -->
+          <div v-if="!hasReviewed" class="w-full mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p class="text-sm text-blue-700">
+              <strong>{{ getText('reviewRecommended') || 'Рекомендуется:' }}</strong> 
+              {{ getText('previewRecommended') || 'Нажмите "ПРЕДВАРИТЕЛЬНЫЙ ПРОСМОТР" чтобы проверить ваши данные перед отправкой' }}
+            </p>
+          </div>
+          
+          <div v-else class="w-full mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div class="flex items-center text-sm text-green-700">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              {{ getText('reviewCompleted') || 'Просмотр завершен! Данные проверены' }}
+            </div>
+          </div>
         </div>
         
-        <!-- Only Preview Button Initially -->
+        <!-- Preview Button -->
         <button @click="showPreview = true"
-          class="w-full max-w-xs bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full transition-colors duration-200">
+          class="w-full max-w-xs bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-full transition-colors duration-200 mb-3">
           {{ getText('previewButton') || 'ПРЕДВАРИТЕЛЬНЫЙ ПРОСМОТР' }}
+        </button>
+        
+        <!-- Continue Button -->
+        <button @click="nextStep"
+          class="w-full max-w-xs bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-full transition-colors duration-200 mb-3">
+          {{ getText('continueButton') || 'ПРОДОЛЖИТЬ' }}
+        </button>
+        <div class="text-xs text-gray-500 mt-1">Debug: Step {{ currentStep }}</div>
+        
+        <!-- Back Button -->
+        <button @click="prevStep"
+          class="w-full max-w-xs bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full transition-colors duration-200">
+          {{ getText('backButton') || 'Назад' }}
         </button>
       </div>
       
@@ -377,6 +408,27 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
+            </div>
+            
+            <div class="mb-4 p-3" :class="hasReviewed ? 'bg-green-50 border border-green-200' : 'bg-blue-50 border border-blue-200'">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm" :class="hasReviewed ? 'text-green-700' : 'text-blue-700'">
+                    <strong>{{ hasReviewed ? (getText('reviewCompleted') || 'Просмотр завершен!') : (getText('reviewNotice') || 'Внимательно проверьте все данные:') }}</strong>
+                  </p>
+                  <ul class="text-xs mt-1 list-disc list-inside space-y-1" :class="hasReviewed ? 'text-green-600' : 'text-blue-600'">
+                    <li>{{ getText('reviewName') || 'Правильность имени' }}</li>
+                    <li>{{ getText('reviewContact') || 'Контактные данные' }}</li>
+                    <li>{{ getText('reviewFiles') || 'Загруженные файлы' }}</li>
+                    <li>{{ getText('reviewPromotion') || 'Информация об акции' }}</li>
+                  </ul>
+                </div>
+                <div v-if="hasReviewed" class="text-green-500">
+                  <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+              </div>
             </div>
             
             <div class="max-h-96 overflow-y-auto text-sm text-gray-700 space-y-3">
@@ -412,9 +464,9 @@
                 class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-full transition-colors duration-200">
                 {{ getText('editButton') || 'РЕДАКТИРОВАТЬ' }}
               </button>
-              <button @click="submitForm"
-                class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-full transition-colors duration-200">
-                {{ getText('completeButton') || 'ЗАВЕРШИТЬ' }}
+              <button @click="markAsReviewed"
+                class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-full transition-colors duration-200 mb-2">
+                {{ getText('confirmReviewButton') || 'ПОДТВЕРДИТЬ ПРОСМОТР' }}
               </button>
               <button @click="closeModal"
                 class="w-full bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-4 rounded-full transition-colors duration-200">
@@ -430,8 +482,8 @@
       </div>
       </div>
       
-      <!-- Final Success Screen (Step 11+) - Separate from main questionnaire -->
-      <div v-else class="w-full flex flex-col items-center text-center">
+      <!-- Final Success Screen (Step 12) - Separate from main questionnaire -->
+      <div v-else-if="currentStep === 12" class="w-full flex flex-col items-center text-center">
         <div class="mb-6">
           <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -462,6 +514,7 @@ export default {
       selectedLanguage: '',
       currentLanguage: 'ru',
       showPreview: false,
+      hasReviewed: false,
       formData: {
         name: '',
         isRepresentative: false,
@@ -626,22 +679,40 @@ export default {
       this.currentStep = 2
     },
     nextStep() {
+      console.log('nextStep called, currentStep:', this.currentStep)
+      console.log('canProceed result:', this.canProceed())
+      
       if (!this.canProceed()) {
+        console.log('Cannot proceed, returning')
         return
       }
 
-      if (this.currentStep < 10) {
-        this.currentStep++
+      if (this.currentStep === 10) {
+        this.currentStep = 11
+        console.log('Step incremented to:', this.currentStep)
       }
-      // Step 10 is the completion screen, no automatic submission
+      else if (this.currentStep === 11) {
+        this.currentStep = 12
+        console.log('Step incremented to:', this.currentStep)
+      }
+      else if (this.currentStep < 10) {
+        this.currentStep++
+        console.log('Step incremented to:', this.currentStep)
+      }
     },
     prevStep() {
       if (this.currentStep > 0) {
         this.currentStep--
       }
     },
+    markAsReviewed() {
+      this.hasReviewed = true
+      this.$nextTick(() => {
+      })
+    },
     submitForm() {
       this.$emit('submit', this.formData)
+      this.currentStep = 12
     },
     handleFileUpload(event, fieldName) {
       const file = event.target.files[0]
@@ -700,6 +771,8 @@ export default {
           return (this.formData.mobilePhone || '').trim().length > 0 && (this.formData.email || '').trim().length > 0
         case 10:
           return !!this.formData.selfieVideo
+        case 11:
+          return true
         default:
           return true
       }
@@ -709,32 +782,27 @@ export default {
       const file = event.target.files[0]
       if (!file) return
 
-      // Check file size (50MB limit)
-      const maxSize = 50 * 1024 * 1024 // 50MB in bytes
+      const maxSize = 50 * 1024 * 1024
       if (file.size > maxSize) {
         this.fileErrors[fieldName] = 'File size must be 50MB or less'
         this.formData[fieldName] = null
         return
       }
 
-      // Clear any previous errors
       this.fileErrors[fieldName] = ''
       
-      // Set the file directly (Vue 3 reactivity)
       this.formData[fieldName] = file
       this.fileSizes[fieldName] = file.size
     },
 
     submitForm() {
-      // Emit the form data to parent component
       this.$emit('submit', this.formData)
-      this.currentStep = 11 // Move to completion screen
+      this.currentStep = 11
     },
 
     editForm() {
-      // Close preview modal if open
       this.showPreview = false
-      // Go back to step 2 (first data entry step) with existing data preserved
+      this.hasReviewed = false
       this.currentStep = 2
     },
 
@@ -742,6 +810,8 @@ export default {
       this.currentStep = 0
       this.selectedLanguage = ''
       this.currentLanguage = 'ru'
+      this.hasReviewed = false
+      this.showPreview = false
       this.formData = {
         name: '',
         isRepresentative: false,
