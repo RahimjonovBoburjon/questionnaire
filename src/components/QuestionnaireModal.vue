@@ -2,21 +2,31 @@
   <div class="flex flex-col items-center justify-center w-full min-h-screen p-4">
     <!-- Main Container -->
     <div class="w-full max-w-md">
-      <!-- Progress Circle - 50% visible, behind the cards, peeking from top -->
-      <div v-if="currentStep > 0 && currentStep <= 11" class="relative flex justify-center mb-6" style="height: 0;">
-        <div 
-          class="w-24 h-24 bg-white rounded-full shadow-md border-2 border-gray-200 flex items-center justify-center"
+      <!-- Progress Circle with step number (only for steps 2-11) -->
+      <div
+        v-if="currentStep > 1 && currentStep <= 11"
+        class="relative flex justify-center mb-6"
+        style="height: 0;"
+      >
+        <div
+          class="w-16 h-16 bg-white rounded-full shadow-md border-2 border-gray-200 flex items-center justify-center"
           style="
             position: absolute;
-            top: -14px;
+            top: -5px;
             left: 50%;
             transform: translateX(-50%);
             z-index: -1;
-            pointer-events: none;
           "
-        ></div>
+        >
+        </div>
+        <span
+          class="text-lg font-semibold text-gray-800"
+          style="position: absolute; top: 5px; left: 50%; transform: translateX(-50%); z-index: 1; width: 100%; text-align: center;"
+        >
+          {{ currentStep - 1 }}/10
+        </span>
       </div>
-      
+
       <!-- Show normal questionnaire content for steps 0-11 -->
       <div v-if="currentStep <= 11" class="w-full bg-white rounded-3xl shadow-md p-6">
       <!-- Language Selection -->
@@ -101,12 +111,12 @@
           </button>
         </div>
       </div>
-      <!-- Step 1: Name & Checkboxes (1/10) -->
+      <!-- Step 1: Name & Checkboxes -->
       <div v-else-if="currentStep === 2" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('nameTitle') }} 1/10</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('nameTitle') }}</h3>
 
         <input v-model="formData.name" :placeholder="getText('namePlaceholder')"
-          class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+          class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-[#c0d700]" />
 
         <div v-if="formData.name && !isValidName(formData.name)" class="text-red-500 text-sm mb-4">
           {{ getText('nameError') || 'Имя должно содержать минимум 3 буквы и только буквы' }}
@@ -115,13 +125,13 @@
         <div class="w-full space-y-3 mb-6">
           <label class="flex items-start space-x-3 cursor-pointer">
             <input type="checkbox" v-model="formData.isRepresentative"
-              class="mt-1 rounded border-gray-300 text-[#FF2D6A] focus:ring-[#FF2D6A]">
+              class="mt-1 rounded border-gray-300 text-[#FF2D6A] focus:ring-[#c0d700]">
             <span class="text-sm text-gray-700">{{ getText('representativeCheck') }}</span>
           </label>
 
           <label class="flex items-start space-x-3 cursor-pointer">
             <input type="checkbox" v-model="formData.confirmAccuracy"
-              class="mt-1 rounded border-gray-300 text-[#FF2D6A] focus:ring-[#FF2D6A]">
+              class="mt-1 rounded border-gray-300 text-[#FF2D6A] focus:ring-[#c0d700]">
             <span class="text-sm text-gray-700">{{ getText('accuracyCheck') }}</span>
           </label>
         </div>
@@ -134,9 +144,9 @@
         </div>
       </div>
 
-      <!-- Step 2: Promotion Description (2/10) -->
+      <!-- Step 2: Promotion Description -->
       <div v-else-if="currentStep === 3" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('promotionTitle') }} 2/10</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('promotionTitle') }}</h3>
 
         <div class="w-full mb-4 bg-gray-50 rounded-xl p-4">
           <p class="text-sm font-semibold text-gray-700 mb-2">{{ getText('examplesTitle') }}</p>
@@ -150,7 +160,7 @@
         </div>
 
         <textarea v-model="formData.promotionDescription" :placeholder="getText('promotionPlaceholder')" rows="6"
-          class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A] resize-none"></textarea>
+          class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#c0d700] resize-none"></textarea>
 
         <div class="flex justify-center">
           <button @click="nextStep" :disabled="!formData.promotionDescription?.trim()"
@@ -158,15 +168,21 @@
             {{ getText('continueButton') }}
           </button>
         </div>
+        <div class="flex justify-center mt-3 w-full">
+          <button @click="prevStep"
+            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+            Назад
+          </button>
+        </div>
       </div>
 
-      <!-- Step 3: Geography (3/10) -->
+      <!-- Step 3: Geography -->
       <div v-else-if="currentStep === 4" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('geographyTitle') }} 3/10</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('geographyTitle') }}</h3>
         <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('geographySubtitle') }}</p>
 
         <input v-model="formData.geography" :placeholder="getText('geographyPlaceholder')"
-          class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]" />
+          class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-[#c0d700]" />
 
         <div class="flex justify-center">
           <button @click="nextStep" :disabled="!formData.geography?.trim()"
@@ -174,17 +190,23 @@
             {{ getText('continueButton') }}
           </button>
         </div>
+        <div class="flex justify-center mt-3 w-full">
+          <button @click="prevStep"
+            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+            Назад
+          </button>
+        </div>
       </div>
 
-      <!-- Step 5: Promotion Languages (4/10) -->
+      <!-- Step 5: Promotion Languages -->
       <div v-else-if="currentStep === 5" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('languagesTitle') || 'ЯЗЫКИ АКЦИИ' }} 4/10</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('languagesTitle') || 'ЯЗЫКИ АКЦИИ' }}</h3>
         <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('languagesSubtitle') || 'На каких языках будет проводиться акция?' }}</p>
         <div class="w-full mb-6 space-y-3">
           <label v-for="lang in ['Узбекский', 'Русский', 'Английский']" :key="lang" 
             class="flex items-center space-x-3 cursor-pointer">
             <input type="checkbox" :value="lang" v-model="formData.promotionLanguages"
-              class="w-5 h-5 text-[#FF2D6A] border-gray-300 rounded focus:ring-[#FF2D6A]">
+              class="w-5 h-5 text-[#FF2D6A] border-gray-300 rounded focus:ring-[#c0d700]">
             <span class="text-gray-700">{{ lang }}</span>
           </label>
         </div>
@@ -200,9 +222,9 @@
         </div>
       </div>
 
-      <!-- Step 6: Location (5/10) -->
+      <!-- Step 6: Location -->
       <div v-else-if="currentStep === 6" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('locationTitle') || 'МЕСТОПОЛОЖЕНИЕ' }} 5/10</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('locationTitle') || 'МЕСТОПОЛОЖЕНИЕ' }}</h3>
         <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('locationSubtitle') || 'Укажите адрес или выберите на карте' }}</p>
         
         <!-- Map placeholder -->
@@ -213,7 +235,7 @@
         <div class="w-full mb-6">
           <input v-model="formData.manualAddress" 
             :placeholder="getText('addressPlaceholder') || 'Или введите адрес вручную'"
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]">
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
         </div>
         <div class="flex gap-3 w-full max-w-xs">
           <button @click="prevStep" 
@@ -227,9 +249,9 @@
         </div>
       </div>
 
-      <!-- Step 7: Business Photo/Video Upload (6/10) -->
+      <!-- Step 7: Business Photo/Video Upload -->
       <div v-else-if="currentStep === 7" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('businessPhotoTitle') || 'ФОТО ИЛИ ВИДЕО (ОБЯЗАТЕЛЬНО)' }} 6/10</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('businessPhotoTitle') || 'ФОТО ИЛИ ВИДЕО (ОБЯЗАТЕЛЬНО)' }}</h3>
         <p class="text-sm text-gray-600 mb-6 text-center leading-relaxed">
           {{ getText('businessPhotoSubtitle') || 'Фото вашей точки / магазина / офиса или товара / процесса оказания услуги' }}<br>
           <span class="text-xs text-gray-500">{{ getText('businessPhotoNote') || '(вы должны присутствовать в кадре)' }}</span>
@@ -272,9 +294,9 @@
         </div>
       </div>
 
-      <!-- Step 8: Document Photo/Video Upload (7/10) -->
+      <!-- Step 8: Document Photo/Video Upload -->
       <div v-else-if="currentStep === 8" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('documentPhotoTitle') || 'ФОТО ИЛИ ВИДЕО (ОБЯЗАТЕЛЬНО)' }} 7/10</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('documentPhotoTitle') || 'ФОТО ИЛИ ВИДЕО (ОБЯЗАТЕЛЬНО)' }}</h3>
         <p class="text-sm text-gray-600 mb-6 text-center leading-relaxed">
           {{ getText('documentPhotoSubtitle') || 'Фото или видео лицензии, сертификата или любого официального документа' }}<br>
           <span class="text-xs text-gray-500">{{ getText('documentPhotoNote') || '(сильно поможет при верификации)' }}</span>
@@ -317,30 +339,30 @@
         </div>
       </div>
 
-      <!-- Step 9: Contact Information (8/10) -->
+      <!-- Step 9: Contact Information -->
       <div v-else-if="currentStep === 9" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('contactTitle') || 'КОНТАКТНАЯ ИНФОРМАЦИЯ' }} 8/10</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('contactTitle') || 'КОНТАКТНАЯ ИНФОРМАЦИЯ' }}</h3>
         <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('contactSubtitle') || 'Укажите ваши контактные данные' }}</p>
         
         <div class="w-full space-y-4 mb-6">
           <div>
             <input v-model="formData.mobilePhone" 
               :placeholder="getText('mobilePhonePlaceholder') || 'Мобильный телефон *'"
-              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]">
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
           </div>
           <div>
             <input v-model="formData.officePhone" 
               :placeholder="getText('officePhonePlaceholder') || 'Рабочий телефон (необязательно)'"
-              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]">
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
           </div>
           <div>
             <input v-model="formData.email" type="email"
               :placeholder="getText('emailPlaceholder') || 'Email *'"
-              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FF2D6A]">
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
           </div>
           <label class="flex items-center space-x-3 cursor-pointer">
             <input type="checkbox" v-model="formData.allowCallback"
-              class="w-5 h-5 text-[#FF2D6A] border-gray-300 rounded focus:ring-[#FF2D6A]">
+              class="w-5 h-5 text-[#FF2D6A] border-gray-300 rounded focus:ring-[#c0d700]">
             <span class="text-sm text-gray-700">{{ getText('allowCallbackLabel') || 'Разрешаю обратный звонок для уточнения деталей' }}</span>
           </label>
         </div>
@@ -357,9 +379,9 @@
         </div>
       </div>
 
-      <!-- Step 10: Selfie Video (9/10) -->
+      <!-- Step 10: Selfie Video -->
       <div v-else-if="currentStep === 10" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('selfieVideoTitle') || 'СЕЛФИ-ВИДЕО' }} 9/10</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('selfieVideoTitle') || 'СЕЛФИ-ВИДЕО' }}</h3>
         <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('selfieVideoSubtitle') || 'Запишите короткое видео с собой для подтверждения' }}</p>
         
         <div class="w-full mb-6">
@@ -394,11 +416,10 @@
         </div>
       </div>
 
-      <!-- Step 11: Initial Completion Screen (10/10) -->
+      <!-- Step 11: Initial Completion Screen -->
       <div v-else-if="currentStep === 11" class="w-full flex flex-col items-center">
         <div class="text-center mb-6">
           <h3 class="text-xl font-bold text-gray-800 mb-2">{{ getText('congratulationsTitle') || 'Поздравляем, все этапы завершены!' }}</h3>
-          <div class="text-lg font-semibold text-[#FF2D6A] mb-4">10/10</div>
           <p class="text-sm text-gray-600 mb-6">{{ getText('reviewMessage') || 'Пожалуйста, проверьте все ваши ответы перед отправкой' }}</p>
           
           <!-- Review status message -->
