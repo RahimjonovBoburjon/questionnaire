@@ -814,6 +814,7 @@ export default {
     },
     markAsReviewed() {
       this.hasReviewed = true
+      this.showPreview = false
       this.$nextTick(() => {
       })
     },
