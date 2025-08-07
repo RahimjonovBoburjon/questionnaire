@@ -3,557 +3,599 @@
     <!-- Main Container -->
     <div class="w-full max-w-md">
       <!-- Progress Circle with step number (only for steps 2-11) -->
-      <div
-        v-if="currentStep > 1 && currentStep <= 11"
-        class="relative flex justify-center mb-6"
-        style="height: 0;"
-      >
-        <div
-          class="w-16 h-16 bg-white rounded-full shadow-md border-2 border-gray-200 flex items-center justify-center"
+      <div v-if="currentStep > 1 && currentStep <= 11" class="relative flex justify-center mb-6" style="height: 0;">
+        <div class="w-16 h-16 bg-white rounded-full shadow-md border-2 border-gray-200 flex items-center justify-center"
           style="
             position: absolute;
             top: -5px;
             left: 50%;
             transform: translateX(-50%);
             z-index: -1;
-          "
-        >
+          ">
         </div>
-        <span
-          class="text-lg font-semibold text-gray-800"
-          style="position: absolute; top: 5px; left: 50%; transform: translateX(-50%); z-index: 1; width: 100%; text-align: center;"
-        >
+        <span class="text-lg font-semibold text-gray-800"
+          style="position: absolute; top: 5px; left: 50%; transform: translateX(-50%); z-index: 1; width: 100%; text-align: center;">
           {{ currentStep - 1 }}/10
         </span>
       </div>
 
       <!-- Show normal questionnaire content for steps 0-11 -->
       <div v-if="currentStep <= 11" class="w-full bg-white rounded-3xl shadow-md p-6">
-      <!-- Language Selection -->
-      <div v-if="currentStep === 0" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getTitle('language') }}</h3>
-        <p class="text-sm text-gray-600 mb-6 text-center">{{ getSubtitle('language') }}</p>
+        <!-- Language Selection -->
+        <div v-if="currentStep === 0" class="w-full flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getTitle('language') }}</h3>
+          <p class="text-sm text-gray-600 mb-6 text-center">{{ getSubtitle('language') }}</p>
 
-        <div class="w-full mb-6">
-          <select v-model="selectedLanguage"
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
-            <option value="">{{ getPlaceholder('selectLanguage') }}</option>
-            <option value="uz">O'ZBEKCHA</option>
-            <option value="ru">РУССКИЙ</option>
-            <option value="en">ENGLISH</option>
-          </select>
+          <div class="w-full mb-6">
+            <select v-model="selectedLanguage"
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 text-center">
+              <option value="">{{ getPlaceholder('selectLanguage') }}</option>
+              <option value="uz">O'ZBEKCHA</option>
+              <option value="ru">РУССКИЙ</option>
+              <option value="en">ENGLISH</option>
+            </select>
+          </div>
+
+          <div class="flex justify-center">
+            <button @click="setLanguageAndContinue" :disabled="!selectedLanguage"
+              class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              OK
+            </button>
+          </div>
         </div>
 
-        <div class="flex justify-center">
-          <button @click="setLanguageAndContinue" :disabled="!selectedLanguage"
-            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            OK
-          </button>
+        <!-- Terms & Conditions -->
+        <div v-else-if="currentStep === 1" class="w-full">
+          <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">{{ getText('termsTitle') || 'ОЗНАКОМЬТЕСЬ ПЕРЕД ПРОДОЛЖЕНИЕМ' }}</h3>
+
+          <div class="w-full mb-8 space-y-6">
+            <!-- Responsibility Section -->
+            <div>
+              <h4 class="text-lg font-bold text-gray-800">{{ getText('responsibilityTitle') || 'Ответственность:' }}
+              </h4>
+              <p class="text-gray-700 mb-3 leading-relaxed">{{ getText('responsibilityText') || 'Пожалуйста, вводите только достоверную и актуальную информацию.' }}</p>
+              <ul class="text-gray-700 space-y-2 ml-4">
+                <li class="flex items-start">
+                  <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span>{{ getText('responsibility1') || 'от имени других лиц без их ведома;' }}</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span>{{ getText('responsibility2') || 'фейковые предложения;' }}</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span>{{ getText('responsibility3') || 'вводящие в заблуждение формулировки.' }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Publicity Section -->
+            <div>
+              <h4 class="font-bold text-gray-800">{{ getText('publicityTitle') || 'Публичность:' }}</h4>
+              <p class="text-gray-700 mb-3 leading-relaxed">{{ getText('publicityText') || 'Если ваша информация пройдет верификацию, она может быть размещена:' }}</p>
+              <ul class="text-gray-700 space-y-2 ml-4">
+                <li class="flex items-start">
+                  <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span>{{ getText('publicity1') || 'в эфире Radio Yonar;' }}</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span>{{ getText('publicity2') || 'в наших соцсетях;' }}</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                  <span>{{ getText('publicity3') || 'на официальных платформах.' }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Consent Section -->
+            <div>
+              <h4 class="font-bold text-gray-800">{{ getText('consentTitle') || 'Согласие:' }}</h4>
+              <p class="text-gray-700 leading-relaxed">{{ getText('consentText') || 'Нажимая кнопку "Согласен", вы подтверждаете, что согласны с этими условиями.' }}</p>
+            </div>
+          </div>
+
+          <div class="flex justify-center">
+            <button @click="nextStep"
+              class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+              {{ getText('agreeButton') || 'Согласен' }}
+            </button>
+          </div>
         </div>
-      </div>
+        <!-- Step 1: Name & Checkboxes -->
+        <div v-else-if="currentStep === 2" class="w-full flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('nameTitle') }}</h3>
 
-      <!-- Terms & Conditions -->
-      <div v-else-if="currentStep === 1" class="w-full">
-        <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">{{ getText('termsTitle') || 'ОЗНАКОМЬТЕСЬ ПЕРЕД ПРОДОЛЖЕНИЕМ' }}</h3>
+          <input v-model="formData.name" :placeholder="getText('namePlaceholder')"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-[#c0d700]" />
 
-        <div class="w-full mb-8 space-y-6">
-          <!-- Responsibility Section -->
-          <div>
-            <h4 class="text-lg font-bold text-gray-800">{{ getText('responsibilityTitle') || 'Ответственность:' }}</h4>
-            <p class="text-gray-700 mb-3 leading-relaxed">{{ getText('responsibilityText') || 'Пожалуйста, вводите только достоверную и актуальную информацию.' }}</p>
-            <ul class="text-gray-700 space-y-2 ml-4">
-              <li class="flex items-start">
-                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                <span>{{ getText('responsibility1') || 'от имени других лиц без их ведома;' }}</span>
-              </li>
-              <li class="flex items-start">
-                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                <span>{{ getText('responsibility2') || 'фейковые предложения;' }}</span>
-              </li>
-              <li class="flex items-start">
-                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                <span>{{ getText('responsibility3') || 'вводящие в заблуждение формулировки.' }}</span>
-              </li>
+          <div v-if="formData.name && !isValidName(formData.name)" class="text-red-500 text-sm mb-4">
+            {{ getText('nameError') || 'Имя должно содержать минимум 3 буквы и только буквы' }}
+          </div>
+
+          <div class="w-full space-y-3 mb-6">
+            <label class="flex items-start space-x-3 cursor-pointer">
+              <input type="checkbox" v-model="formData.isRepresentative"
+                class="mt-1 rounded border-gray-300 text-[#FF2D6A] focus:ring-[#c0d700]">
+              <span class="text-sm text-gray-700">{{ getText('representativeCheck') }}</span>
+            </label>
+
+            <label class="flex items-start space-x-3 cursor-pointer">
+              <input type="checkbox" v-model="formData.confirmAccuracy"
+                class="mt-1 rounded border-gray-300 text-[#FF2D6A] focus:ring-[#c0d700]">
+              <span class="text-sm text-gray-700">{{ getText('accuracyCheck') }}</span>
+            </label>
+          </div>
+
+          <div class="flex justify-center">
+            <button @click="nextStep" :disabled="!canProceed()"
+              class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ getText('continueButton') }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Promotion Description -->
+        <div v-else-if="currentStep === 3" class="w-full flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('promotionTitle') }}</h3>
+
+          <div class="w-full mb-4 bg-gray-50 rounded-xl p-4">
+            <p class="text-sm font-semibold text-gray-700 mb-2">{{ getText('examplesTitle') }}</p>
+            <ul class="text-xs text-gray-600 space-y-1">
+              <li>• {{ getText('example1') }}</li>
+              <li>• {{ getText('example2') }}</li>
+              <li>• {{ getText('example3') }}</li>
+              <li>• {{ getText('example4') }}</li>
+              <li>• {{ getText('example5') }}</li>
             </ul>
           </div>
 
-          <!-- Publicity Section -->
-          <div>
-            <h4 class="font-bold text-gray-800">{{ getText('publicityTitle') || 'Публичность:' }}</h4>
-            <p class="text-gray-700 mb-3 leading-relaxed">{{ getText('publicityText') || 'Если ваша информация пройдет верификацию, она может быть размещена:' }}</p>
-            <ul class="text-gray-700 space-y-2 ml-4">
-              <li class="flex items-start">
-                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                <span>{{ getText('publicity1') || 'в эфире Radio Yonar;' }}</span>
-              </li>
-              <li class="flex items-start">
-                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                <span>{{ getText('publicity2') || 'в наших соцсетях;' }}</span>
-              </li>
-              <li class="flex items-start">
-                <span class="w-2 h-2 bg-gray-800 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                <span>{{ getText('publicity3') || 'на официальных платформах.' }}</span>
-              </li>
-            </ul>
-          </div>
+          <textarea v-model="formData.promotionDescription" :placeholder="getText('promotionPlaceholder')" rows="6"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#c0d700] resize-none"></textarea>
 
-          <!-- Consent Section -->
-          <div>
-            <h4 class="font-bold text-gray-800">{{ getText('consentTitle') || 'Согласие:' }}</h4>
-            <p class="text-gray-700 leading-relaxed">{{ getText('consentText') || 'Нажимая кнопку "Согласен", вы подтверждаете, что согласны с этими условиями.' }}</p>
+          <div class="flex justify-center">
+            <button @click="nextStep" :disabled="!formData.promotionDescription?.trim()"
+              class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ getText('continueButton') }}
+            </button>
+          </div>
+          <div class="flex justify-center mt-3 w-full">
+            <button @click="prevStep"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+              Назад
+            </button>
           </div>
         </div>
 
-        <div class="flex justify-center">
-          <button @click="nextStep"
-            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
-            {{ getText('agreeButton') || 'Согласен' }}
-          </button>
-        </div>
-      </div>
-      <!-- Step 1: Name & Checkboxes -->
-      <div v-else-if="currentStep === 2" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('nameTitle') }}</h3>
+        <!-- Step 3: Geography -->
+        <div v-else-if="currentStep === 4" class="w-full flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('geographyTitle') }}</h3>
+          <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('geographySubtitle') }}</p>
 
-        <input v-model="formData.name" :placeholder="getText('namePlaceholder')"
-          class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-2 focus:outline-none focus:ring-2 focus:ring-[#c0d700]" />
+          <input v-model="formData.geography" :placeholder="getText('geographyPlaceholder')"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-[#c0d700]" />
 
-        <div v-if="formData.name && !isValidName(formData.name)" class="text-red-500 text-sm mb-4">
-          {{ getText('nameError') || 'Имя должно содержать минимум 3 буквы и только буквы' }}
-        </div>
-
-        <div class="w-full space-y-3 mb-6">
-          <label class="flex items-start space-x-3 cursor-pointer">
-            <input type="checkbox" v-model="formData.isRepresentative"
-              class="mt-1 rounded border-gray-300 text-[#FF2D6A] focus:ring-[#c0d700]">
-            <span class="text-sm text-gray-700">{{ getText('representativeCheck') }}</span>
-          </label>
-
-          <label class="flex items-start space-x-3 cursor-pointer">
-            <input type="checkbox" v-model="formData.confirmAccuracy"
-              class="mt-1 rounded border-gray-300 text-[#FF2D6A] focus:ring-[#c0d700]">
-            <span class="text-sm text-gray-700">{{ getText('accuracyCheck') }}</span>
-          </label>
+          <div class="flex justify-center">
+            <button @click="nextStep" :disabled="!formData.geography?.trim()"
+              class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ getText('continueButton') }}
+            </button>
+          </div>
+          <div class="flex justify-center mt-3 w-full">
+            <button @click="prevStep"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+              Назад
+            </button>
+          </div>
         </div>
 
-        <div class="flex justify-center">
-          <button @click="nextStep" :disabled="!canProceed()"
-            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            {{ getText('continueButton') }}
-          </button>
-        </div>
-      </div>
+        <!-- Step 4: Promotion Languages -->
+        <div v-else-if="currentStep === 5" class="w-full flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('languagesTitle') || 'ЯЗЫКИ АКЦИИ'
+            }}</h3>
+          <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('languagesSubtitle') || 'На каких языках будет проводиться акция?' }}</p>
+          <div class="w-full mb-6 space-y-3">
+            <label v-for="lang in ['Узбекский', 'Русский', 'Английский']" :key="lang"
+              class="flex items-center space-x-3 cursor-pointer">
+              <input type="checkbox" :value="lang" v-model="formData.promotionLanguages"
+                class="w-5 h-5 text-[#FF2D6A] border-gray-300 rounded focus:ring-[#c0d700]">
+              <span class="text-gray-700">{{ lang }}</span>
+            </label>
+          </div>
 
-      <!-- Step 2: Promotion Description -->
-      <div v-else-if="currentStep === 3" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('promotionTitle') }}</h3>
-
-        <div class="w-full mb-4 bg-gray-50 rounded-xl p-4">
-          <p class="text-sm font-semibold text-gray-700 mb-2">{{ getText('examplesTitle') }}</p>
-          <ul class="text-xs text-gray-600 space-y-1">
-            <li>• {{ getText('example1') }}</li>
-            <li>• {{ getText('example2') }}</li>
-            <li>• {{ getText('example3') }}</li>
-            <li>• {{ getText('example4') }}</li>
-            <li>• {{ getText('example5') }}</li>
-          </ul>
+          <div class="flex justify-center">
+            <button @click="nextStep" :disabled="formData.promotionLanguages.length === 0"
+              class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ getText('continueButton') }}
+            </button>
+          </div>
+          <div class="flex justify-center mt-3 w-full">
+            <button @click="prevStep"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+              Назад
+            </button>
+          </div>
         </div>
 
-        <textarea v-model="formData.promotionDescription" :placeholder="getText('promotionPlaceholder')" rows="6"
-          class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#c0d700] resize-none"></textarea>
+        <!-- Step 5: Location -->
+        <div v-else-if="currentStep === 6" class="w-full flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('locationTitle') ||
+            'МЕСТОПОЛОЖЕНИЕ' }}</h3>
+          <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('locationSubtitle') || 'Укажите адрес или выберите на карте' }}</p>
 
-        <div class="flex justify-center">
-          <button @click="nextStep" :disabled="!formData.promotionDescription?.trim()"
-            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            {{ getText('continueButton') }}
-          </button>
-        </div>
-        <div class="flex justify-center mt-3 w-full">
-          <button @click="prevStep"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
-            Назад
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 3: Geography -->
-      <div v-else-if="currentStep === 4" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('geographyTitle') }}</h3>
-        <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('geographySubtitle') }}</p>
-
-        <input v-model="formData.geography" :placeholder="getText('geographyPlaceholder')"
-          class="w-full rounded-xl border border-gray-200 px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-[#c0d700]" />
-
-        <div class="flex justify-center">
-          <button @click="nextStep" :disabled="!formData.geography?.trim()"
-            class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            {{ getText('continueButton') }}
-          </button>
-        </div>
-        <div class="flex justify-center mt-3 w-full">
-          <button @click="prevStep"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
-            Назад
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 5: Promotion Languages -->
-      <div v-else-if="currentStep === 5" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('languagesTitle') || 'ЯЗЫКИ АКЦИИ' }}</h3>
-        <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('languagesSubtitle') || 'На каких языках будет проводиться акция?' }}</p>
-        <div class="w-full mb-6 space-y-3">
-          <label v-for="lang in ['Узбекский', 'Русский', 'Английский']" :key="lang" 
-            class="flex items-center space-x-3 cursor-pointer">
-            <input type="checkbox" :value="lang" v-model="formData.promotionLanguages"
-              class="w-5 h-5 text-[#FF2D6A] border-gray-300 rounded focus:ring-[#c0d700]">
-            <span class="text-gray-700">{{ lang }}</span>
-          </label>
-        </div>
-        <div class="flex gap-3 w-full max-w-xs">
-          <button @click="prevStep" 
-            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200">
-            {{ getText('backButton') || 'Назад' }}
-          </button>
-          <button @click="nextStep" :disabled="!canProceed()"
-            class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            {{ getText('continueButton') }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 6: Location -->
-      <div v-else-if="currentStep === 6" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('locationTitle') || 'МЕСТОПОЛОЖЕНИЕ' }}</h3>
-        <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('locationSubtitle') || 'Укажите адрес или выберите на карте' }}</p>
-        
-        <!-- Map placeholder -->
-        <div class="w-full mb-4 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
-          <span class="text-gray-500">{{ getText('mapPlaceholder') || 'Карта (будет добавлена позже)' }}</span>
-        </div>
-        
-        <div class="w-full mb-6">
-          <input v-model="formData.manualAddress" 
-            :placeholder="getText('addressPlaceholder') || 'Или введите адрес вручную'"
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
-        </div>
-        <div class="flex gap-3 w-full max-w-xs">
-          <button @click="prevStep" 
-            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200">
-            {{ getText('backButton') || 'Назад' }}
-          </button>
-          <button @click="nextStep" :disabled="!canProceed()"
-            class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            {{ getText('continueButton') }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 7: Business Photo/Video Upload -->
-      <div v-else-if="currentStep === 7" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('businessPhotoTitle') || 'ФОТО ИЛИ ВИДЕО (ОБЯЗАТЕЛЬНО)' }}</h3>
-        <p class="text-sm text-gray-600 mb-6 text-center leading-relaxed">
-          {{ getText('businessPhotoSubtitle') || 'Фото вашей точки / магазина / офиса или товара / процесса оказания услуги' }}<br>
-          <span class="text-xs text-gray-500">{{ getText('businessPhotoNote') || '(вы должны присутствовать в кадре)' }}</span>
-        </p>
-        
-        <div class="w-full mb-6">
-          <div class="relative">
-            <input type="file" @change="handleFileUpload($event, 'businessPhoto')" accept="image/*,video/*"
-              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-            <div class="w-full h-40 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-gray-100 transition-colors">
-              <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-              </svg>
-              <span class="text-sm font-medium text-gray-600">{{ getText('uploadButton') || 'ЗАГРУЗИТЬ' }}</span>
-              <span class="text-xs text-gray-400 mt-1">{{ getText('uploadHint') || 'Камера или галерея' }}</span>
+          <!-- Map placeholder -->
+          <div
+            class="w-full mb-4 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
+            <div class="text-center">
+              <div class="text-4xl text-gray-400 mb-2">🗺️</div>
+              <p class="text-sm text-gray-500">{{ getText('mapPlaceholder') || 'Карта будет здесь' }}</p>
             </div>
           </div>
-          <div v-if="formData.businessPhoto" class="mt-3 p-3 bg-green-50 rounded-lg">
-            <div class="flex items-center text-sm text-green-700">
-              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-              {{ getText('imageUploaded') || 'Изображение загружено' }}: {{ formData.businessPhoto.name }}
-            </div>
-          </div>
-          <div v-if="fileErrors.businessPhoto" class="mt-2 text-sm text-red-600">
-            {{ fileErrors.businessPhoto }}
-          </div>
-        </div>
 
-        <div class="flex gap-3 w-full max-w-xs">
-          <button @click="prevStep" 
-            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200">
-            {{ getText('backButton') || 'Назад' }}
-          </button>
-          <button @click="nextStep" :disabled="!canProceed()"
-            class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            {{ getText('continueButton') }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 8: Document Photo/Video Upload -->
-      <div v-else-if="currentStep === 8" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('documentPhotoTitle') || 'ФОТО ИЛИ ВИДЕО (ОБЯЗАТЕЛЬНО)' }}</h3>
-        <p class="text-sm text-gray-600 mb-6 text-center leading-relaxed">
-          {{ getText('documentPhotoSubtitle') || 'Фото или видео лицензии, сертификата или любого официального документа' }}<br>
-          <span class="text-xs text-gray-500">{{ getText('documentPhotoNote') || '(сильно поможет при верификации)' }}</span>
-        </p>
-        
-        <div class="w-full mb-6">
-          <div class="relative">
-            <input type="file" @change="handleFileUpload($event, 'documentPhoto')" accept="image/*,video/*"
-              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-            <div class="w-full h-40 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-gray-100 transition-colors">
-              <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-              </svg>
-              <span class="text-sm font-medium text-gray-600">{{ getText('uploadButton') || 'ЗАГРУЗИТЬ' }}</span>
-              <span class="text-xs text-gray-400 mt-1">{{ getText('uploadHint') || 'Камера или галерея' }}</span>
-            </div>
-          </div>
-          <div v-if="formData.documentPhoto" class="mt-3 p-3 bg-green-50 rounded-lg">
-            <div class="flex items-center text-sm text-green-700">
-              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-              {{ getText('imageUploaded') || 'Изображение загружено' }}: {{ formData.documentPhoto.name }}
-            </div>
-          </div>
-          <div v-if="fileErrors.documentPhoto" class="mt-2 text-sm text-red-600">
-            {{ fileErrors.documentPhoto }}
-          </div>
-        </div>
-
-        <div class="flex gap-3 w-full max-w-xs">
-          <button @click="prevStep" 
-            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200">
-            {{ getText('backButton') || 'Назад' }}
-          </button>
-          <button @click="nextStep" :disabled="!canProceed()"
-            class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            {{ getText('continueButton') }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 9: Contact Information -->
-      <div v-else-if="currentStep === 9" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('contactTitle') || 'КОНТАКТНАЯ ИНФОРМАЦИЯ' }}</h3>
-        <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('contactSubtitle') || 'Укажите ваши контактные данные' }}</p>
-        
-        <div class="w-full space-y-4 mb-6">
-          <div>
-            <input v-model="formData.mobilePhone" 
-              :placeholder="getText('mobilePhonePlaceholder') || 'Мобильный телефон *'"
+          <div class="w-full mb-6">
+            <input v-model="formData.manualAddress"
+              :placeholder="getText('addressPlaceholder') || 'Или введите адрес вручную'"
               class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
           </div>
-          <div>
-            <input v-model="formData.officePhone" 
-              :placeholder="getText('officePhonePlaceholder') || 'Рабочий телефон (необязательно)'"
-              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
+          <div class="flex gap-3 max-w-xs">
+            <button @click="nextStep" :disabled="!formData.manualAddress?.trim()"
+              class="flex-1 bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ getText('continueButton') }}
+            </button>
           </div>
-          <div>
-            <input v-model="formData.email" type="email"
-              :placeholder="getText('emailPlaceholder') || 'Email *'"
-              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
-          </div>
-          <label class="flex items-center space-x-3 cursor-pointer">
-            <input type="checkbox" v-model="formData.allowCallback"
-              class="w-5 h-5 text-[#FF2D6A] border-gray-300 rounded focus:ring-[#c0d700]">
-            <span class="text-sm text-gray-700">{{ getText('allowCallbackLabel') || 'Разрешаю обратный звонок для уточнения деталей' }}</span>
-          </label>
-        </div>
-
-        <div class="flex gap-3 w-full max-w-xs">
-          <button @click="prevStep" 
-            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200">
-            {{ getText('backButton') || 'Назад' }}
-          </button>
-          <button @click="nextStep" :disabled="!canProceed()"
-            class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            {{ getText('continueButton') }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Step 10: Selfie Video -->
-      <div v-else-if="currentStep === 10" class="w-full flex flex-col items-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('selfieVideoTitle') || 'СЕЛФИ-ВИДЕО' }}</h3>
-        <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('selfieVideoSubtitle') || 'Запишите короткое видео с собой для подтверждения' }}</p>
-        
-        <div class="w-full mb-6">
-          <div class="relative">
-            <input type="file" @change="handleFileUpload($event, 'selfieVideo')" accept="video/*"
-              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-            <div class="w-full h-40 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-gray-100 transition-colors">
-              <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-              </svg>
-              <span class="text-sm text-gray-500 text-center">{{ getText('uploadSelfieVideo') || 'Загрузить селфи-видео' }}</span>
-              <span class="text-xs text-gray-400 mt-1">{{ getText('videoRequirements') || 'Макс. 50 МБ, до 2 минут' }}</span>
-            </div>
-          </div>
-          <div v-if="formData.selfieVideo" class="mt-2 text-sm text-green-600">
-            ✓ {{ formData.selfieVideo.name }}
-          </div>
-          <div v-if="fileErrors.selfieVideo" class="mt-2 text-sm text-red-600">
-            {{ fileErrors.selfieVideo }}
+          <div class="flex justify-center mt-3 w-full">
+            <button @click="prevStep"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+              Назад
+            </button>
           </div>
         </div>
 
-        <div class="flex gap-3 w-full max-w-xs">
-          <button @click="prevStep" 
-            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200">
-            {{ getText('backButton') || 'Назад' }}
-          </button>
-          <button @click="nextStep" :disabled="!canProceed()"
-            class="bg-[#FF2D6A] hover:bg-[#e0265c] text-white font-semibold py-3 px-6 rounded-full flex-1 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            {{ getText('continueButton') }}
-          </button>
-        </div>
-      </div>
+        <!-- Step 6: Business Photo/Video Upload -->
+        <div v-else-if="currentStep === 7" class="w-full flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('businessPhotoTitle') || 'ФОТО ИЛИ ВИДЕО(ОБЯЗАТЕЛЬНО)' }}</h3>
+          <p class="text-sm text-gray-600 mb-6 text-center leading-relaxed">
+            {{ getText('businessPhotoSubtitle') || 'Фото вашей точки / магазина / офиса или товара / процесса оказания услуги' }}<br>
+            <span class="text-xs text-gray-500">{{ getText('businessPhotoNote') || '(вы должны присутствовать в кадре)'
+              }}</span>
+          </p>
 
-      <!-- Step 11: Initial Completion Screen -->
-      <div v-else-if="currentStep === 11" class="w-full flex flex-col items-center">
-        <div class="text-center mb-6">
-          <h3 class="text-xl font-bold text-gray-800 mb-2">{{ getText('congratulationsTitle') || 'Поздравляем, все этапы завершены!' }}</h3>
-          <p class="text-sm text-gray-600 mb-6">{{ getText('reviewMessage') || 'Пожалуйста, проверьте все ваши ответы перед отправкой' }}</p>
-          
-          <!-- Review status message -->
-          <div v-if="!hasReviewed" class="w-full mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p class="text-sm text-blue-700">
-              <strong>{{ getText('reviewRecommended') || 'Рекомендуется:' }}</strong> 
-              {{ getText('previewRecommended') || 'Нажмите "ПРЕДВАРИТЕЛЬНЫЙ ПРОСМОТР" чтобы проверить ваши данные перед отправкой' }}
-            </p>
-          </div>
-          
-          <div v-else class="w-full mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-            <div class="flex items-center text-sm text-green-700">
-              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-              </svg>
-              {{ getText('reviewCompleted') || 'Просмотр завершен! Данные проверены' }}
-            </div>
-          </div>
-        </div>
-        
-        <!-- Preview Button -->
-        <button @click="showPreview = true"
-          class="w-full max-w-xs bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mb-3">
-          {{ getText('previewButton') || 'ПРЕДВАРИТЕЛЬНЫЙ ПРОСМОТР' }}
-        </button>
-        
-        <!-- Continue Button -->
-        <button @click="nextStep"
-          class="w-full max-w-xs bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mb-3">
-          {{ getText('continueButton') || 'ПРОДОЛЖИТЬ' }}
-        </button>
-        <div class="text-xs text-gray-500 mt-1">Debug: Step {{ currentStep }}</div>
-        
-        <!-- Back Button -->
-        <button @click="prevStep"
-          class="w-full max-w-xs bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
-          {{ getText('backButton') || 'Назад' }}
-        </button>
-      </div>
-      
-      <!-- Preview Modal Overlay -->
-      <div v-if="showPreview" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click="showPreview = false">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 max-h-[80vh] overflow-hidden" @click.stop>
-          <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-              <h3 class="text-lg font-semibold text-gray-800">{{ getText('previewTitle') || 'Предварительный просмотр данных' }}</h3>
-              <button @click="showPreview = false" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          <div class="w-full mb-6">
+            <div class="relative">
+              <input type="file" @change="handleFileUpload($event, 'businessPhoto')" accept="image/*,video/*"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <div
+                class="w-full h-40 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-gray-100 transition-colors">
+                <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
-              </button>
+                <span class="text-sm font-medium text-gray-600">{{ getText('uploadButton') || 'ЗАГРУЗИТЬ' }}</span>
+                <span class="text-xs text-gray-400 mt-1">{{ getText('uploadHint') || 'Камера или галерея' }}</span>
+              </div>
             </div>
-            
-            <div class="mb-4 p-3" :class="hasReviewed ? 'bg-green-50 border border-green-200' : 'bg-blue-50 border border-blue-200'">
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm" :class="hasReviewed ? 'text-green-700' : 'text-blue-700'">
-                    <strong>{{ hasReviewed ? (getText('reviewCompleted') || 'Просмотр завершен!') : (getText('reviewNotice') || 'Внимательно проверьте все данные:') }}</strong>
-                  </p>
-                  <ul class="text-xs mt-1 list-disc list-inside space-y-1" :class="hasReviewed ? 'text-green-600' : 'text-blue-600'">
-                    <li>{{ getText('reviewName') || 'Правильность имени' }}</li>
-                    <li>{{ getText('reviewContact') || 'Контактные данные' }}</li>
-                    <li>{{ getText('reviewFiles') || 'Загруженные файлы' }}</li>
-                    <li>{{ getText('reviewPromotion') || 'Информация об акции' }}</li>
-                  </ul>
-                </div>
-                <div v-if="hasReviewed" class="text-green-500">
-                  <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            <div v-if="formData.businessPhoto" class="mt-3 p-3 bg-green-50 rounded-lg">
+              <div class="flex items-center text-sm text-green-700">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"></path>
+                </svg>
+                {{ getText('imageUploaded') || 'Изображение загружено' }}: {{ formData.businessPhoto.name }}
+              </div>
+            </div>
+            <div v-if="fileErrors.businessPhoto" class="mt-2 text-sm text-red-600">
+              {{ fileErrors.businessPhoto }}
+            </div>
+          </div>
+
+          <div class="flex justify-center">
+            <button @click="nextStep" :disabled="!formData.businessPhoto"
+              class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ getText('continueButton') }}
+            </button>
+          </div>
+          <div class="flex justify-center mt-3 w-full">
+            <button @click="prevStep"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+              Назад
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 7: Document Photo/Video Upload -->
+        <div v-else-if="currentStep === 8" class="w-full flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('documentPhotoTitle') || 'ФОТО ИЛИ ВИДЕО(ОБЯЗАТЕЛЬНО)' }}</h3>
+          <p class="text-sm text-gray-600 mb-6 text-center leading-relaxed">
+            {{ getText('documentPhotoSubtitle') || 'Фото или видео лицензии, сертификата или любого официального документа' }}<br>
+            <span class="text-xs text-gray-500">{{ getText('documentPhotoNote') || '(сильно поможет при верификации)'
+              }}</span>
+          </p>
+
+          <div class="w-full mb-6">
+            <div class="relative">
+              <input type="file" @change="handleFileUpload($event, 'documentPhoto')" accept="image/*,video/*"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <div
+                class="w-full h-40 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-gray-100 transition-colors">
+                <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span class="text-sm font-medium text-gray-600">{{ getText('uploadButton') || 'ЗАГРУЗИТЬ' }}</span>
+                <span class="text-xs text-gray-400 mt-1">{{ getText('uploadHint') || 'Камера или галерея' }}</span>
+              </div>
+            </div>
+            <div v-if="formData.documentPhoto" class="mt-3 p-3 bg-green-50 rounded-lg">
+              <div class="flex items-center text-sm text-green-700">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"></path>
+                </svg>
+                {{ getText('imageUploaded') || 'Изображение загружено' }}: {{ formData.documentPhoto.name }}
+              </div>
+            </div>
+            <div v-if="fileErrors.documentPhoto" class="mt-2 text-sm text-red-600">
+              {{ fileErrors.documentPhoto }}
+            </div>
+          </div>
+
+          <div class="flex justify-center">
+            <button @click="nextStep" :disabled="formData.promotionLanguages.length === 0 || !formData.documentPhoto"
+              class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ getText('continueButton') }}
+            </button>
+          </div>
+          <div class="flex justify-center mt-3 w-full">
+            <button @click="prevStep"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+              Назад
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 8: Contact Information -->
+        <div v-else-if="currentStep === 9" class="w-full flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('contactTitle') || 'КОНТАКТНАЯ ИНФОРМАЦИЯ' }}</h3>
+          <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('contactSubtitle') || 'Укажите ваши контактные данные' }}</p>
+
+          <div class="w-full space-y-4 mb-6">
+            <div>
+              <input v-model="formData.mobilePhone"
+                :placeholder="getText('mobilePhonePlaceholder') || 'Мобильный телефон *'"
+                class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
+            </div>
+            <div>
+              <input v-model="formData.officePhone"
+                :placeholder="getText('officePhonePlaceholder') || 'Рабочий телефон (необязательно)'"
+                class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
+            </div>
+            <div>
+              <input v-model="formData.email" type="email" :placeholder="getText('emailPlaceholder') || 'Email *'"
+                class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#c0d700]">
+            </div>
+            <label class="flex items-center space-x-3 cursor-pointer">
+              <input type="checkbox" v-model="formData.allowCallback"
+                class="w-5 h-5 text-[#FF2D6A] border-gray-300 rounded focus:ring-[#c0d700]">
+              <span class="text-sm text-gray-700">{{ getText('allowCallbackLabel') || 'Разрешаю обратный звонок для уточнения деталей' }}</span>
+            </label>
+          </div>
+
+          <div class="flex justify-center">
+            <button @click="nextStep" :disabled="!formData.mobilePhone?.trim() || !formData.email?.trim()"
+              class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ getText('continueButton') }}
+            </button>
+          </div>
+          <div class="flex justify-center mt-3 w-full">
+            <button @click="prevStep"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+              Назад
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 9: Selfie Video -->
+        <div v-else-if="currentStep === 10" class="w-full flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center">{{ getText('selfieVideoTitle') ||
+            'СЕЛФИ-ВИДЕО' }}</h3>
+          <p class="text-sm text-gray-600 mb-6 text-center">{{ getText('selfieVideoSubtitle') || 'Запишите короткое видео с собой для подтверждения' }}</p>
+
+          <div class="w-full mb-6">
+            <div class="relative">
+              <input type="file" @change="handleFileUpload($event, 'selfieVideo')" accept="video/*"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <div
+                class="w-full h-40 bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center hover:bg-gray-100 transition-colors">
+                <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                  </path>
+                </svg>
+                <span class="text-sm text-gray-500 text-center">{{ getText('uploadSelfieVideo') || 'Загрузить селфи-видео' }}</span>
+                <span class="text-xs text-gray-400 mt-1">{{ getText('videoRequirements') || 'Макс. 50 МБ, до 2 минут'
+                  }}</span>
+              </div>
+            </div>
+            <div v-if="formData.selfieVideo" class="mt-2 text-sm text-green-600">
+              ✓ {{ formData.selfieVideo.name }}
+            </div>
+            <div v-if="fileErrors.selfieVideo" class="mt-2 text-sm text-red-600">
+              {{ fileErrors.selfieVideo }}
+            </div>
+          </div>
+
+          <div class="flex justify-center">
+            <button @click="nextStep" :disabled="!formData.selfieVideo"
+              class="bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-12 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ getText('continueButton') }}
+            </button>
+          </div>
+          <div class="flex justify-center mt-3 w-full">
+            <button @click="prevStep"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-12 rounded-lg transition-colors duration-200">
+              Назад
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 10: Initial Completion Screen -->
+        <div v-else-if="currentStep === 11" class="w-full flex flex-col items-center">
+          <div class="text-center mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ getText('congratulationsTitle') || 'Поздравляем, все этапы завершены!' }}</h3>
+            <p class="text-sm text-gray-600 mb-6">{{ getText('reviewMessage') || 'Пожалуйста, проверьте все ваши ответы перед отправкой' }}</p>
+
+            <!-- Review status message -->
+            <div v-if="!hasReviewed" class="w-full mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p class="text-sm text-blue-700">
+                <strong>{{ getText('reviewRecommended') || 'Рекомендуется:' }}</strong>
+                {{ getText('previewRecommended') || 'Нажмите "ПРЕДВАРИТЕЛЬНЫЙ ПРОСМОТР" чтобы проверить ваши данные перед отправкой' }}
+              </p>
+            </div>
+
+            <div v-else class="w-full mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div class="flex items-center text-sm text-green-700">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"></path>
+                </svg>
+                {{ getText('reviewCompleted') || 'Просмотр завершен! Данные проверены' }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview Button -->
+          <button @click="showPreview = true"
+            class="w-full max-w-xs bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mb-3">
+            {{ getText('previewButton') || 'ПРЕДВАРИТЕЛЬНЫЙ ПРОСМОТР' }}
+          </button>
+
+          <!-- Continue Button -->
+          <button @click="nextStep"
+            class="w-full max-w-xs bg-[#c0d700] hover:bg-[#a8c000] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 mb-3">
+            {{ getText('continueButton') || 'ПРОДОЛЖИТЬ' }}
+          </button>
+
+          <!-- Back Button -->
+          <button @click="prevStep"
+            class="w-full max-w-xs bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
+            {{ getText('backButton') || 'Назад' }}
+          </button>
+        </div>
+
+        <!-- Preview Modal Overlay -->
+        <div v-if="showPreview" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          @click="showPreview = false">
+          <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 max-h-[80vh] overflow-hidden" @click.stop>
+            <div class="p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">{{ getText('previewTitle') || 'Предварительный просмотр данных' }}</h3>
+                <button @click="showPreview = false" class="text-gray-400 hover:text-gray-600">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
                   </svg>
+                </button>
+              </div>
+
+              <div class="mb-4 p-3"
+                :class="hasReviewed ? 'bg-green-50 border border-green-200' : 'bg-blue-50 border border-blue-200'">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-sm" :class="hasReviewed ? 'text-green-700' : 'text-blue-700'">
+                      <strong>{{ hasReviewed ? (getText('reviewCompleted') || 'Просмотр завершен!') :
+                        (getText('reviewNotice') || 'Внимательно проверьте все данные:') }}</strong>
+                    </p>
+                    <ul class="text-xs mt-1 list-disc list-inside space-y-1"
+                      :class="hasReviewed ? 'text-green-600' : 'text-blue-600'">
+                      <li>{{ getText('reviewName') || 'Правильность имени' }}</li>
+                      <li>{{ getText('reviewContact') || 'Контактные данные' }}</li>
+                      <li>{{ getText('reviewFiles') || 'Загруженные файлы' }}</li>
+                      <li>{{ getText('reviewPromotion') || 'Информация об акции' }}</li>
+                    </ul>
+                  </div>
+                  <div v-if="hasReviewed" class="text-green-500">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div class="max-h-96 overflow-y-auto text-sm text-gray-700 space-y-3">
-              <div><strong>{{ getText('nameTitle') || 'Имя' }}:</strong> {{ formData.name }}</div>
-              <div><strong>{{ getText('representativeLabel') || 'Представитель' }}:</strong> {{ formData.isRepresentative ? 'Да' : 'Нет' }}</div>
-              <div><strong>{{ getText('accuracyLabel') || 'Точность данных' }}:</strong> {{ formData.confirmAccuracy ? 'Подтверждено' : 'Не подтверждено' }}</div>
-              <div><strong>{{ getText('promotionTitle') || 'Описание акции' }}:</strong> {{ formData.promotionDescription }}</div>
-              <div><strong>{{ getText('geographyTitle') || 'География' }}:</strong> {{ formData.geography }}</div>
-              <div v-if="formData.promotionLanguages && formData.promotionLanguages.length > 0">
-                <strong>{{ getText('languagesTitle') || 'Языки акции' }}:</strong> {{ formData.promotionLanguages.join(', ') }}
+
+              <div class="max-h-96 overflow-y-auto text-sm text-gray-700 space-y-3">
+                <div><strong>{{ getText('nameTitle') || 'Имя' }}:</strong> {{ formData.name }}</div>
+                <div><strong>{{ getText('representativeLabel') || 'Представитель' }}:</strong> {{
+                  formData.isRepresentative ? 'Да' : 'Нет' }}</div>
+                <div><strong>{{ getText('accuracyLabel') || 'Точность данных' }}:</strong> {{ formData.confirmAccuracy ?
+                  'Подтверждено' : 'Не подтверждено' }}</div>
+                <div><strong>{{ getText('promotionTitle') || 'Описание акции' }}:</strong> {{
+                  formData.promotionDescription }}</div>
+                <div><strong>{{ getText('geographyTitle') || 'География' }}:</strong> {{ formData.geography }}</div>
+                <div v-if="formData.promotionLanguages && formData.promotionLanguages.length > 0">
+                  <strong>{{ getText('languagesTitle') || 'Языки акции' }}:</strong> {{
+                    formData.promotionLanguages.join(', ') }}
+                </div>
+                <div v-if="formData.manualAddress || formData.location">
+                  <strong>{{ getText('locationTitle') || 'Местоположение' }}:</strong> {{ formData.manualAddress ||
+                  formData.location }}
+                </div>
+                <div><strong>{{ getText('contactTitle') || 'Контакты' }}:</strong></div>
+                <div class="ml-4">
+                  <div>Мобильный: {{ formData.mobilePhone }}</div>
+                  <div v-if="formData.officePhone">Рабочий: {{ formData.officePhone }}</div>
+                  <div>Email: {{ formData.email }}</div>
+                  <div>Обратный звонок: {{ formData.allowCallback ? 'Разрешен' : 'Запрещен' }}</div>
+                </div>
+                <div><strong>{{ getText('uploadsTitle') || 'Загруженные файлы' }}:</strong></div>
+                <div class="ml-4">
+                  <div v-if="formData.businessPhoto">✓ {{ getText('businessPhotoLabel') || 'Фото бизнеса' }}: {{
+                    formData.businessPhoto.name }}</div>
+                  <div v-if="formData.documentPhoto">✓ {{ getText('documentPhotoLabel') || 'Документы' }}: {{
+                    formData.documentPhoto.name }}</div>
+                  <div v-if="formData.selfieVideo">✓ {{ getText('selfieVideoTitle') || 'Селфи-видео' }}: {{
+                    formData.selfieVideo.name }}</div>
+                </div>
               </div>
-              <div v-if="formData.manualAddress || formData.location">
-                <strong>{{ getText('locationTitle') || 'Местоположение' }}:</strong> {{ formData.manualAddress || formData.location }}
+
+              <!-- 4 Action Buttons in Preview Modal -->
+              <div class="mt-6 space-y-3">
+                <button @click="editForm"
+                  class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-full transition-colors duration-200">
+                  {{ getText('editButton') || 'РЕДАКТИРОВАТЬ' }}
+                </button>
+                <button @click="markAsReviewed"
+                  class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-full transition-colors duration-200 mb-2">
+                  {{ getText('confirmReviewButton') || 'ПОДТВЕРДИТЬ ПРОСМОТР' }}
+                </button>
+                <button @click="closeModal"
+                  class="w-full bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-4 rounded-full transition-colors duration-200">
+                  {{ getText('cancelButton') || 'ОТМЕНИТЬ' }}
+                </button>
+                <button @click="showPreview = false"
+                  class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-full transition-colors duration-200">
+                  {{ getText('closePreviewButton') || 'Закрыть просмотр' }}
+                </button>
               </div>
-              <div><strong>{{ getText('contactTitle') || 'Контакты' }}:</strong></div>
-              <div class="ml-4">
-                <div>Мобильный: {{ formData.mobilePhone }}</div>
-                <div v-if="formData.officePhone">Рабочий: {{ formData.officePhone }}</div>
-                <div>Email: {{ formData.email }}</div>
-                <div>Обратный звонок: {{ formData.allowCallback ? 'Разрешен' : 'Запрещен' }}</div>
-              </div>
-              <div><strong>{{ getText('uploadsTitle') || 'Загруженные файлы' }}:</strong></div>
-              <div class="ml-4">
-                <div v-if="formData.businessPhoto">✓ {{ getText('businessPhotoLabel') || 'Фото бизнеса' }}: {{ formData.businessPhoto.name }}</div>
-                <div v-if="formData.documentPhoto">✓ {{ getText('documentPhotoLabel') || 'Документы' }}: {{ formData.documentPhoto.name }}</div>
-                <div v-if="formData.selfieVideo">✓ {{ getText('selfieVideoTitle') || 'Селфи-видео' }}: {{ formData.selfieVideo.name }}</div>
-              </div>
-            </div>
-            
-            <!-- 4 Action Buttons in Preview Modal -->
-            <div class="mt-6 space-y-3">
-              <button @click="editForm"
-                class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-full transition-colors duration-200">
-                {{ getText('editButton') || 'РЕДАКТИРОВАТЬ' }}
-              </button>
-              <button @click="markAsReviewed"
-                class="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-full transition-colors duration-200 mb-2">
-                {{ getText('confirmReviewButton') || 'ПОДТВЕРДИТЬ ПРОСМОТР' }}
-              </button>
-              <button @click="closeModal"
-                class="w-full bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-4 rounded-full transition-colors duration-200">
-                {{ getText('cancelButton') || 'ОТМЕНИТЬ' }}
-              </button>
-              <button @click="showPreview = false"
-                class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-full transition-colors duration-200">
-                {{ getText('closePreviewButton') || 'Закрыть просмотр' }}
-              </button>
             </div>
           </div>
         </div>
       </div>
-      </div>
-      
-      <!-- Final Success Screen (Step 12) - Separate from main questionnaire -->
-      <div v-else-if="currentStep === 12" class="w-full bg-white rounded-3xl shadow-md border border-gray-200 p-6 flex flex-col items-center text-center">
+
+      <!-- Final Success Screen (Step 11) - Separate from main questionnaire -->
+      <div v-else-if="currentStep === 12"
+        class="w-full bg-white rounded-3xl shadow-md border border-gray-200 p-6 flex flex-col items-center text-center">
         <div class="mb-6">
           <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-gray-800 mb-3">{{ getText('successTitle') || 'Отлично, заявка получена!' }}</h3>
+          <h3 class="text-xl font-bold text-gray-800 mb-3">{{ getText('successTitle') || 'Отлично, заявка получена!' }}
+          </h3>
           <p class="text-gray-600 mb-4">{{ getText('successMessage') || 'Скоро мы с вами свяжемся, чтобы всё заработало.' }}</p>
           <div class="text-sm font-medium text-[#FF2D6A] italic">
             {{ getText('brandMessage') || 'Radio Yonar — слышит, замечает, усиливает!' }}
@@ -746,7 +788,7 @@ export default {
     nextStep() {
       console.log('nextStep called, currentStep:', this.currentStep)
       console.log('canProceed result:', this.canProceed())
-      
+
       if (!this.canProceed()) {
         console.log('Cannot proceed, returning')
         return
@@ -855,7 +897,7 @@ export default {
       }
 
       this.fileErrors[fieldName] = ''
-      
+
       this.formData[fieldName] = file
       this.fileSizes[fieldName] = file.size
     },
@@ -907,7 +949,8 @@ body {
   background: #3a393a;
 }
 
-.bg-\[#FF2D6A\], .bg-\[#FF2D6A\]:hover {
+.bg-\[#FF2D6A\],
+.bg-\[#FF2D6A\]:hover {
   background-color: #c0d700 !important;
 }
 
