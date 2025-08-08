@@ -585,7 +585,7 @@
         </div>
       </div>
 
-      <!-- Final Success Screen (Step 11) - Separate from main questionnaire -->
+      <!-- Final Success Screen (Step 11) -->
       <div v-else-if="currentStep === 12"
         class="w-full bg-white rounded-3xl shadow-md border border-gray-200 p-6 flex flex-col items-center text-center">
         <div class="mb-6">
