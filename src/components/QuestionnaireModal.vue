@@ -799,8 +799,9 @@ export default {
         console.log('Step incremented to:', this.currentStep)
       }
       else if (this.currentStep === 11) {
+        this.submitForm()
         this.currentStep = 12
-        console.log('Step incremented to:', this.currentStep)
+        console.log('Form submitted to Telegram')
       }
       else if (this.currentStep < 10) {
         this.currentStep++

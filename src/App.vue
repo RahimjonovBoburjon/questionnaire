@@ -80,48 +80,55 @@ export default {
     },
     async sendFiles(answers) {
       const filesUploaded = []
-      const userName = answers[0] || 'Noma\'lum'
+      const userName = answers.name || 'Noma\'lum'
 
-      for (let i = 0; i < answers.length; i++) {
-        const answer = answers[i]
-        if (answer instanceof File) {
+      const fileTypes = {
+        'businessPhoto': { api: 'sendPhoto', field: 'photo', label: 'Biznes fotosi' },
+        'documentPhoto': { api: 'sendPhoto', field: 'photo', label: 'Hujjat fotosi' },
+        'selfieVideo': { api: 'sendVideo', field: 'video', label: 'Selfi video' }
+      }
+
+      for (const [fieldName, fileData] of Object.entries(answers)) {
+        if (fileData instanceof File && fileTypes[fieldName]) {
           try {
             const formData = new FormData()
             formData.append('chat_id', this.adminChatId)
-            formData.append('document', answer)
-            formData.append('caption', `Ism: ${userName}\n📎 Yuklangan hujjat: ${answer.name}`)
+            formData.append(fileTypes[fieldName].field, fileData)
+            formData.append('caption', `Ism: ${userName}\n📎 ${fileTypes[fieldName].label}: ${fileData.name}`)
 
-            const response = await fetch(`https://api.telegram.org/bot${this.botToken}/sendDocument`, {
+            const response = await fetch(`https://api.telegram.org/bot${this.botToken}/${fileTypes[fieldName].api}`, {
               method: 'POST',
               body: formData
             })
 
             if (response.ok) {
               const result = await response.json()
+              const mediaType = fileTypes[fieldName].api === 'sendPhoto' ? 'photo' : 'video'
               filesUploaded.push({
-                index: i,
-                fileName: answer.name,
-                fileId: result.result.document.file_id,
-                success: true
+                fieldName: fieldName,
+                fileName: fileData.name,
+                fileId: result.result[mediaType]?.[0]?.file_id || result.result.document?.file_id,
+                success: true,
+                mediaType: mediaType
               })
-              console.log(`File ${answer.name} uploaded successfully`)
+              console.log(`${fileTypes[fieldName].label} ${fileData.name} yuklandi`)
             } else {
               filesUploaded.push({
-                index: i,
-                fileName: answer.name,
+                fieldName: fieldName,
+                fileName: fileData.name,
                 success: false,
-                error: 'Upload failed'
+                error: 'Yuklash amalga oshmadi'
               })
-              console.error(`Failed to upload file: ${answer.name}`)
+              console.error(`${fileTypes[fieldName].label} ${fileData.name} yuklanmadi`)
             }
           } catch (error) {
             filesUploaded.push({
-              index: i,
-              fileName: answer.name,
+              fieldName: fieldName,
+              fileName: fileData.name,
               success: false,
               error: error.message
             })
-            console.error(`Error uploading file ${answer.name}:`, error)
+            console.error(`${fileTypes[fieldName].label} ${fileData.name} xatosi:`, error)
           }
         }
       }
@@ -166,11 +173,13 @@ export default {
         if (formData[field.key]) {
           const fileUpload = filesUploaded.find(f => f.fieldName === field.key)
           if (fileUpload && fileUpload.success) {
-            text += `📎 ${field.label}: ${fileUpload.fileName} (yuklandi)\n`
+            const mediaIcon = field.key === 'selfieVideo' ? '🎥' : '📷'
+            text += `${mediaIcon} ${field.label}: ${fileUpload.fileName} (yuklandi)\n`
           } else if (fileUpload && !fileUpload.success) {
             text += `❌ ${field.label}: ${fileUpload.fileName} (yuklanmadi: ${fileUpload.error})\n`
           } else {
-            text += `📎 ${field.label}: ${formData[field.key].name} (yuklanmoqda...)\n`
+            const mediaIcon = field.key === 'selfieVideo' ? '🎥' : '📷'
+            text += `${mediaIcon} ${field.label}: ${formData[field.key].name} (yuklanmoqda...)\n`
           }
         }
       })
