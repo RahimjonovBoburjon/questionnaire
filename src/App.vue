@@ -177,13 +177,13 @@ export default {
             text += `${mediaIcon} ${field.label}: ${fileUpload.fileName} (yuklandi)\n`
           } else if (fileUpload && !fileUpload.success) {
             text += `❌ ${field.label}: ${fileUpload.fileName} (yuklanmadi: ${fileUpload.error})\n`
-          } else {
+        } else {
             const mediaIcon = field.key === 'selfieVideo' ? '🎥' : '📷'
             text += `${mediaIcon} ${field.label}: ${formData[field.key].name} (yuklanmoqda...)\n`
           }
         }
       })
-      
+
       return text
     }
   },
